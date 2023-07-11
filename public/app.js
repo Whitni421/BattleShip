@@ -1,3 +1,10 @@
+const ws = new WebSocket("ws://localhost:8084");
+const URL = "http://localhost:8084/";
+ws.addEventListener("open", () => {
+  console.log("client connected");
+});
+
+
 const boardWidth = 10;
 const boardHeight = 10;
 
@@ -56,10 +63,40 @@ document.addEventListener("DOMContentLoaded", function () {
   drawGrid();
 });
 
+const player = {
+  username: {
+    String,
+  required:[true, "Must input username"]},
+  ships: [
+    {name:"ship5",
+   status:[5,5,5,5,5],
+   rotation:false},
+   {name:"ship4",
+   status:[5,5,5,5],
+   rotation:false},
+   {name:"ship3",
+   status:[5,5,5],
+   rotation:false},
+   {name:"ship2",
+   status:[5,5],
+   rotation:false},
+  ],
+  parrot: true,
+  board:[]
+
+}
+
+const game = {
+  players:[],
+  board1:[],
+  board2:[]
+}
+
 class Ship {
   constructor(game) {
     this.game = game;
-    this.positions = [];
+    this.positions = []
+    ;
   }
 }
 
@@ -73,52 +110,16 @@ class Game {
 Vue.createApp({
   data() {
     return {
-      socket: null,
-      name: "",
+      page:"page1"
     };
   },
   methods: {
-    connect: function () {
-      // 1: Connect to websocket
-      const protocol = window.location.protocol.includes("https")
-        ? "wss"
-        : "ws";
-      this.socket = new WebSocket(`${protocol}://localhost:8080`);
-      this.socket.onopen = function () {
-        console.log("Connected to websocket");
-      };
-      this.socket.onmessage = function (event) {
-        console.log("WS message:", event.data);
-      };
-    },
-    createUser: function () {
-      // post to /messages
-      fetch("/messages", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          message: this.HTTPmessage,
-        }),
-      })
-        .then((response) => {
-          console.log("HTTP message was sent through websocket");
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-    },
-    sendMessageWS: function () {
-      // Send message through websocket
-      this.socket.send(this.name);
-    },
-    getMessageWS: function () {
-      // Get message through websocket
-      this.socket.onmessage = function (event) {
-        console.log(event.data);
-      };
-    },
+    load_screen: function (){
+      this.page = "page2"
+    }
+    
   },
-  created: function () {},
+  created: function () {
+    console.log(this.page)
+  },
 }).mount("#app");

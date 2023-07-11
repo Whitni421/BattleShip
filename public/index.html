@@ -10,14 +10,20 @@
   </head>
   <body>
     <div id="app">
-      <div id="landing_page">
-        <div id="login">
+        <div id="page1 page" v-on="load" v-if="page == page1">
           <h3>Enter Username</h3>
-          <input type="text" v-model="name" />
-          <button @click="createUser()">Play</button>
+          <input id="username_bar" type="text" placeholder="Username..."/>
+          <button @click="load_screen()">Play</button>
+        </div>
+        <div id="page2 page" v-else>
+          <h3 class="loading">loading</h3>
+        </div>
+      <div id="game page">
+        <div id="canvas"></div>
         </div>
       </div>
-      <div id="game"></div>
+      <div id="win-screen page">Win</div>
+      <div id="win-screen page">Lose</div>
     </div>
   </body>
   <script src="app.js"></script>
