@@ -83,6 +83,13 @@ class Player {
     this.board = board;
   }
 
+  insertParrot(){
+    if (this.parrot == true){
+    }
+    else{
+    }
+  }
+
   createShips() {
     let ship5 = new Ship(5);
     this.ships.push(ship5);
@@ -114,24 +121,7 @@ class Ship {
   }
 }
 
-class Game {
-  constructor(Player, canvas) {
-    this.cracken = cracken;
-    this.canvas = canvas;
-    this.game_over = false;
-    this.players = [];
-    this.board1 = [];
-    this.board2 = [];
-  }
 
-  GameWin() {
-    if (this.game_over == true) {
-      win = document.querySelector("winpage");
-      win.addClassList("win");
-      return;
-    }
-  }
-}
 
 Vue.createApp({
   data() {
@@ -163,6 +153,12 @@ Vue.createApp({
       // Get message through websocket
       this.socket.onmessage = function (event) {
         console.log(event.data);
+        if (event == "<waiting>") {
+          page = "page2";
+        }
+        if (event == "<playing>"){
+          page = "page3";
+        }
       };
     },
   },

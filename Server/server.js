@@ -67,14 +67,42 @@ function addPlayer(player, id) {
       game(openGames[0], openGames[1]),
       playingGames.length - 1
     );
+    openGames[0].send("<playing>"); //  
     openGames.shift();
     openGames.shift();
   }
+  else{
+    if (openGames.length=1){
+      openGames[0].send("<waiting>");
+
+    }
+  }
+  
 }
 //creates random id
 function generateIdentifier() {
   return Date.now();
 }
+
+
 class game {
-  constructor(player1, player2, index) {}
-}
+  constructor(player1, player2, index,canvas, ) {
+    this.kraken = kraken;
+      this.canvas = canvas;
+      this.game_over = false;
+      this.players = [];
+      this.board1 = [];
+      this.board2 = [];
+      player1id = player1[0];
+      player1name=player1[1];
+      player2id=player2[0]
+      player2name=player2[1];
+  }
+
+      GameWin() {
+        if (this.game_over == true) {
+          win = document.querySelector("winpage");
+          win.addClassList("win");
+        }
+      }
+    }
