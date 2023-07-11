@@ -4,6 +4,18 @@ ws.addEventListener("open", () => {
   console.log("client connected");
 });
 
+board = [[0,0,0,0,0,0,0,0,0,0],
+         [0,0,0,0,0,0,0,0,0,0],
+         [0,0,0,0,0,0,0,0,0,0],
+         [0,0,0,0,0,0,0,0,0,0],
+         [0,0,0,0,0,0,0,0,0,0],
+         [0,0,0,0,0,0,0,0,0,0],
+         [0,0,0,0,0,0,0,0,0,0],
+         [0,0,0,0,0,0,0,0,0,0],
+         [0,0,0,0,0,0,0,0,0,0],
+         [0,0,0,0,0,0,0,0,0,0]]
+
+
 const boardWidth = 10;
 const boardHeight = 10;
 
@@ -62,40 +74,74 @@ document.addEventListener("DOMContentLoaded", function () {
   drawGrid();
 });
 
-const player = {
-  username: {
-    String,
-    required: [true, "Must input username"],
-  },
-  ships: [
-    { name: "ship5", status: [5, 5, 5, 5, 5], rotation: false },
-    { name: "ship4", status: [5, 5, 5, 5], rotation: false },
-    { name: "ship3", status: [5, 5, 5], rotation: false },
-    { name: "ship2", status: [5, 5], rotation: false },
-  ],
-  parrot: true,
-  board: [],
-};
+class Player {
+  constructor (){
+    this.username= {username:""};
+    this.ships= [];
+    this.parrot= true;
+    this.board= board;
+  }
+  
+  createShips(){
+      let ship5 = new Ship(5)
+      this.ships.push(ship5)
+    for (i in Range(2)){
+      let ship = new Ship(4)
+      this.ships.push(ship)
+    }
+    for (i in Range(2)){
+      let ship = new Ship(3)
+      this.ships.push(ship)
+    }
+    let ship2 = new Ship(2)
+      this.ships.push(ship2)
+  };
 
-const game = {
-  players: [],
-  board1: [],
-  board2: [],
+  insertShips(){
+    for (location in this.ships.location){
+      this.board[location[0]][location[1]] = 5;
+
+    }
+
+  }
 };
 
 class Ship {
-  constructor(game) {
-    this.game = game;
-    this.positions = [];
+  constructor(type){
+    this.rotation= false;
+    this.location=[];
+    this.sunk=false;
+    this.type = type
   }
-}
+
+
+    
+
+};
 
 class Game {
-  constructor(canvas) {
+  constructor(Player, canvas){
+    this.cracken = cracken
     this.canvas = canvas;
+    this.game_over = false;
+    this.players= [
+    ];
+    this.board1= [];
+    this.board2= [];
   }
-}
-// Game setup code end
+
+  GameWin(){
+    if (this.game_over == true){
+      win = document.querySelector("winpage");
+      win.addClassList("win")
+      return
+    }
+  }
+
+
+  
+};
+
 
 Vue.createApp({
   data() {
