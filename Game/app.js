@@ -1,12 +1,18 @@
 const ws = new WebSocket("ws://localhost:8084");
-const URL = "http:///localhost:8080/";
+const URL = "http://localhost:8084/";
 ws.addEventListener("open", () => {
   console.log("client connected");
 });
+
+
+
 Vue.createApp({
   data() {
-    return {};
+    return {
+    };
   },
-  methods: {},
+  methods: {
+    
+  },
   created: function () {},
 }).mount("#app");
