@@ -8,7 +8,7 @@
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <title>Document</title>
   </head>
-  <body>
+  <body style="margin: 0; padding: 0">
     <div id="app">
       <div id="landing_page">
         <div id="login">
@@ -17,7 +17,9 @@
           <button>Play</button>
         </div>
       </div>
-      <div id="game"></div>
+      <div id="game">
+        <canvas id="canvas"></canvas>
+      </div>
     </div>
   </body>
   <script src="app.js"></script>
