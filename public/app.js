@@ -1,9 +1,8 @@
-const ws = new WebSocket("ws://localhost:8084");
-const URL = "http://localhost:8084/";
+const ws = new WebSocket("ws://localhost:8080");
+const URL = "http://localhost:8080/";
 ws.addEventListener("open", () => {
   console.log("client connected");
 });
-
 
 const boardWidth = 10;
 const boardHeight = 10;
@@ -66,37 +65,28 @@ document.addEventListener("DOMContentLoaded", function () {
 const player = {
   username: {
     String,
-  required:[true, "Must input username"]},
+    required: [true, "Must input username"],
+  },
   ships: [
-    {name:"ship5",
-   status:[5,5,5,5,5],
-   rotation:false},
-   {name:"ship4",
-   status:[5,5,5,5],
-   rotation:false},
-   {name:"ship3",
-   status:[5,5,5],
-   rotation:false},
-   {name:"ship2",
-   status:[5,5],
-   rotation:false},
+    { name: "ship5", status: [5, 5, 5, 5, 5], rotation: false },
+    { name: "ship4", status: [5, 5, 5, 5], rotation: false },
+    { name: "ship3", status: [5, 5, 5], rotation: false },
+    { name: "ship2", status: [5, 5], rotation: false },
   ],
   parrot: true,
-  board:[]
-
-}
+  board: [],
+};
 
 const game = {
-  players:[],
-  board1:[],
-  board2:[]
-}
+  players: [],
+  board1: [],
+  board2: [],
+};
 
 class Ship {
   constructor(game) {
     this.game = game;
-    this.positions = []
-    ;
+    this.positions = [];
   }
 }
 
@@ -110,16 +100,13 @@ class Game {
 Vue.createApp({
   data() {
     return {
-      page:"page1"
+      page: "page1",
     };
   },
   methods: {
-    load_screen: function (){
-      this.page = "page2"
-    }
-    
+    load_screen: function () {
+      this.page = "page2";
+    },
   },
-  created: function () {
-    console.log(this.page)
-  },
+  created: function () {},
 }).mount("#app");
