@@ -16,7 +16,8 @@ app.use(
     },
   })
 );
-
+const openGames = [];
+const playingGames = [];
 // 2: Assign name to server
 const server = app.listen(port, function () {
   console.log(`Running server on port ${port}...`);
@@ -31,8 +32,17 @@ wss.on("connection", function (ws) {
 
   // Handle message through websocket
   ws.on("message", function incoming(message) {
-    console.log("Got a message through WS: ", message.toString());
-    broadcast(message.toString());
+    if (message.toString().startsWith("<username>")) {
+      var username = message.toString().replace("<username>", "");
+      const clientid = generateIdentifier();
+      clients.set(clientid, ws);
+      addPlayer(username, clientid);
+    }
+    if (message.toString().startsWith("<attack>")) {
+      var username = message.toString().replace("<username>", "");
+      console.log("Got a message through WS: ", username);
+      broadcast(username);
+    }
   });
 });
 
@@ -45,6 +55,26 @@ app.post("/messages", function (req, res) {
 
 function broadcast(message) {
   wss.clients.forEach((client) => {
-    client.send(message);
+    client.send("username is" + message);
   });
+}
+
+function addPlayer(player, id) {
+  //pushes players to list of games currently being played
+  openGames.push([id, player]);
+  if (openGames.length > 1) {
+    playingGames.push(
+      game(openGames[0], openGames[1]),
+      playingGames.length - 1
+    );
+    openGames.shift();
+    openGames.shift();
+  }
+}
+//creates random id
+function generateIdentifier() {
+  return Date.now();
+}
+class game {
+  constructor(player1, player2, index) {}
 }
