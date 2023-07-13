@@ -4,53 +4,133 @@ ws.addEventListener("open", () => {
   console.log("client connected");
 });
 
-board = [
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-];
-
-const boardWidth = 10;
-const boardHeight = 10;
-
-// Game setup code start
 document.addEventListener("DOMContentLoaded", function () {
   const canvas = document.getElementById("canvas");
-  canvas.width = 1280;
-  canvas.height = 720;
+  console.log(canvas);
   const ctx = canvas.getContext("2d");
-  const cellSize = canvas.width / boardWidth;
-  const gridWidth = canvas.width * 0.7;
-  const gridHeight = canvas.height * 0.8;
-  ctx.fillStyle = "black";
+  canvas.width = 1280;
+  canvas.height = 1000;
+  canvas.style.border = "5px solid black";
+
+  // use this to make it scalable
+  // canvas.width = window.innerWidth - 50;
+  // canvas.height = window.innerHeight - 50;
+
+  const ships = [];
+  ships.push({});
+
+  let offset_x;
+  let offset_y;
+
+  let get_offset = function () {
+    let canvas_offsets = canvas.getBoundingClientRect();
+    offset_x = canvas_offsets.left;
+    offset_y = canvas_offsets.top;
+  };
+
+  get_offset();
+  window.onscroll = function () {
+    get_offset();
+  };
+  window.onresize = function () {
+    get_offset();
+  };
+  canvas.onresize = function () {
+    get_offset();
+  };
+
+  let current_shape_index = null;
+  let is_dragging = false;
+  let startX;
+  let startY;
+
+  let is_mouse_in_shape = function (x, y, shape) {
+    let shape_left = shape.x;
+    let shape_right = shape.x + shape.width;
+    let shape_top = shape.y;
+    let shape_bottom = shape.y + shape.height;
+
+    if (x > shape_left && x < shape_right && y > shape_top && y < shape_bottom)
+      return true;
+    else return false;
+  };
+
+  let mouse_down = function (event) {
+    event.preventDefault();
+
+    startX = parseInt(event.clientX - offset_x);
+    startY = parseInt(event.clientY - offset_y);
+
+    let index = 0;
+    for (let shape of shapes) {
+      if (is_mouse_in_shape(startX, startY, shape)) {
+        current_shape_index = index;
+        is_dragging = true;
+        break;
+      }
+      index++;
+    }
+  };
+
+  let mouse_up = function (event) {
+    if (!is_dragging) return;
+
+    event.preventDefault();
+    is_dragging = false;
+  };
+  let mouse_out = function (event) {
+    if (!is_dragging) return;
+
+    event.preventDefault();
+    is_dragging = false;
+  };
+
+  let mouse_move = function (event) {
+    if (!is_dragging) return;
+    else {
+      event.preventDefault();
+      let mouseX = parseInt(event.clientX - offset_x);
+      let mouseY = parseInt(event.clientY - offset_y);
+
+      let dx = mouseX - startX;
+      let dy = mouseY - startY;
+
+      let current_shape = shapes[current_shape_index];
+      current_shape.x += dx;
+      current_shape.y += dy;
+
+      draw_shapes();
+
+      startX = mouseX;
+      startY = mouseY;
+    }
+  };
+
+  canvas.onmousedown = mouse_down;
+  canvas.onmouseup = mouse_up;
+  canvas.onmouseout = mouse_up;
+  canvas.onmousemove = mouse_move;
+
+  const gridHeight = canvas.height;
+  const gridSize = 10;
+  const cellSize = gridHeight / gridSize;
+  const gridWidth = cellSize * gridSize;
 
   function gridLines() {
     ctx.lineWidth = 1;
     ctx.strokeStyle = "black";
-    for (let x = 0; x <= gridWidth; x += cellSize) {
-      ctx.beginPath();
-      ctx.moveTo(x, 0);
-      ctx.lineTo(x, gridHeight);
-      ctx.stroke();
-    }
-    for (let y = 0; y <= gridHeight; y += cellSize) {
-      ctx.beginPath();
-      ctx.moveTo(0, y);
-      ctx.lineTo(gridWidth, y);
-      ctx.stroke();
+
+    for (var row = 0; row < gridSize; row++) {
+      for (var col = 0; col < gridSize; col++) {
+        ctx.beginPath();
+        ctx.strokeRect(col * cellSize, row * cellSize, cellSize, cellSize);
+        ctx.stroke();
+      }
     }
   }
 
   function drawGrid() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
+    ctx.clearRect(0, 0, gridWidth, gridHeight);
     gridLines();
 
     // Highlight the cell on mouse hover
@@ -63,30 +143,85 @@ document.addEventListener("DOMContentLoaded", function () {
       const col = Math.floor(x / cellSize);
 
       // Clear previous highlight
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.clearRect(0, 0, gridWidth, gridHeight);
 
       // Draw grid
       gridLines();
       ctx.fillStyle = "rgba(0, 0, 255, 0.2)";
       ctx.fillRect(col * cellSize, row * cellSize, cellSize, cellSize);
+      // ctx.fillRect parameters: x, y, width, height
     });
   }
 
   drawGrid();
 });
 
+class Game {
+  constructor(canvas) {
+    this.canvas = canvas;
+    this.width = this.canvas.width;
+    this.height = this.canvas.height;
+    this.topMargin = 260;
+    this.debug = true;
+    this.player = new Player(this);
+    this.numberOfObstacles = 10;
+    this.obstacles = [];
+    this.mouse = {
+      x: this.width * 0.5,
+      y: this.height * 0.5,
+      pressed: false,
+    };
+
+    // event listeners
+    canvas.addEventListener("mousedown", (e) => {
+      this.mouse.x = e.offsetX;
+      this.mouse.y = e.offsetY;
+      this.mouse.pressed = true;
+    });
+    canvas.addEventListener("mouseup", (e) => {
+      this.mouse.x = e.offsetX;
+      this.mouse.y = e.offsetY;
+      this.mouse.pressed = false;
+    });
+    canvas.addEventListener("mousemove", (e) => {
+      if (this.mouse.pressed) {
+        this.mouse.x = e.offsetX;
+        this.mouse.y = e.offsetY;
+      }
+    });
+    window.addEventListener("keydown", (e) => {
+      if (e.key == "d") this.debug = !this.debug;
+    });
+  }
+  render(context) {
+    this.obstacles.forEach((obstacle) => obstacle.draw(context));
+    this.player.draw(context);
+    this.player.update();
+  }
+}
+
 class Player {
   constructor() {
     this.username = { username: "" };
     this.ships = [];
     this.parrot = true;
-    this.board = board;
+    this.board = [
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    ];
   }
 
-  insertParrot(){
-    if (this.parrot == true){
-    }
-    else{
+  insertParrot() {
+    if (this.parrot == true) {
+    } else {
     }
   }
 
@@ -121,8 +256,6 @@ class Ship {
   }
 }
 
-
-
 Vue.createApp({
   data() {
     return {
@@ -156,7 +289,7 @@ Vue.createApp({
         if (event == "<waiting>") {
           page = "page2";
         }
-        if (event == "<playing>"){
+        if (event == "<playing>") {
           page = "page3";
         }
       };
