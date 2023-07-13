@@ -87,10 +87,10 @@ function generateClientId() {
 }
 class game {
   constructor(player1, player2, index) {
-    var player1id = player1[0];
-    var player1name = player1[1];
-    var player2name = player2[1];
-    var player2id = player2[0];
-    var index = index;
+    this.player1id = player1[0];
+    this.player1name = player1[1];
+    this.player2name = player2[1];
+    this.player2id = player2[0];
+    this.index = index;
   }
 }
