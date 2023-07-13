@@ -44,6 +44,7 @@ wss.on("connection", function (ws) {
       var username = message.toString().replace("<username>", "");
       const clientId = clients.get(ws);
       // client.set(clientid, ws);
+      console.log(username);
       console.log(clientId);
       addPlayer(username, clientId);
     }
@@ -80,7 +81,6 @@ function addPlayer(player, id) {
     openGames.shift();
     openGames.shift();
     console.log(playingGames);
-    playingGames[index].sendBoards();
   }
 }
 //creates random id

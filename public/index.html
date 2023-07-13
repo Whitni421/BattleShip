@@ -12,7 +12,12 @@
     <div id="app">
       <div id="page1 page" v-on="load" v-if="page === 'page1'">
         <h3>Enter Username</h3>
-        <input id="username_bar" type="text" placeholder="Username..." />
+        <input
+          id="username_bar"
+          type="text"
+          placeholder="Username..."
+          v-model="username"
+        />
         <button @click="load_screen()">Play</button>
         <canvas id="canvas"></canvas>
       </div>
