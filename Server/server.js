@@ -26,17 +26,26 @@ const server = app.listen(port, function () {
 // 3: Name websocket
 const wss = new WebSocket.Server({ server: server });
 
+// Data structure to store client information
+const clients = new Map();
+
 wss.on("connection", function (ws) {
   // This is the new client connection
   console.log("New `ws` client connected");
+  // Generate a unique ID for the client
+  const clientId = generateClientId();
+
+  // Store client information
+  clients.set(ws, clientId);
 
   // Handle message through websocket
   ws.on("message", function incoming(message) {
     if (message.toString().startsWith("<username>")) {
       var username = message.toString().replace("<username>", "");
-      const clientid = generateIdentifier();
-      clients.set(clientid, ws);
-      addPlayer(username, clientid);
+      const clientId = clients.get(ws);
+      // client.set(clientid, ws);
+      console.log(clientId);
+      addPlayer(username, clientId);
     }
     if (message.toString().startsWith("<attack>")) {
       var username = message.toString().replace("<username>", "");
@@ -60,49 +69,28 @@ function broadcast(message) {
 }
 
 function addPlayer(player, id) {
-  //pushes players to list of games currently being played
+  //makes a tuple and adds it to the list of players looking for a game
   openGames.push([id, player]);
   if (openGames.length > 1) {
     playingGames.push(
-      game(openGames[0], openGames[1]),
+      new game(openGames[0], openGames[1]),
       playingGames.length - 1
     );
-    openGames[0].send("<playing>"); //  
     openGames.shift();
     openGames.shift();
+    console.log(playingGames);
   }
-  else{
-    if (openGames.length=1){
-      openGames[0].send("<waiting>");
-
-    }
-  }
-  
 }
 //creates random id
-function generateIdentifier() {
+function generateClientId() {
   return Date.now();
 }
-
-
 class game {
-  constructor(player1, player2, index,canvas, ) {
-    this.kraken = kraken;
-      this.canvas = canvas;
-      this.game_over = false;
-      this.players = [];
-      this.board1 = [];
-      this.board2 = [];
-      player1id = player1[0];
-      player1name=player1[1];
-      player2id=player2[0]
-      player2name=player2[1];
+  constructor(player1, player2, index) {
+    var player1id = player1[0];
+    var player1name = player1[1];
+    var player2name = player2[1];
+    var player2id = player2[0];
+    var index = index;
   }
-
-      GameWin() {
-        if (this.game_over == true) {
-          win = document.querySelector("winpage");
-          win.addClassList("win");
-        }
-      }
-    }
+}
