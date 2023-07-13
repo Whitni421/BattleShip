@@ -72,13 +72,15 @@ function addPlayer(player, id) {
   //makes a tuple and adds it to the list of players looking for a game
   openGames.push([id, player]);
   if (openGames.length > 1) {
+    var index = playingGames.length;
     playingGames.push(
       new game(openGames[0], openGames[1]),
-      playingGames.length - 1
+      playingGames.length
     );
     openGames.shift();
     openGames.shift();
     console.log(playingGames);
+    playingGames[index].sendBoards();
   }
 }
 //creates random id
@@ -92,5 +94,21 @@ class game {
     this.player2name = player2[1];
     this.player2id = player2[0];
     this.index = index;
+    this.board = [
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    ];
+  }
+  sendBoards() {
+    this.player1id.send("testing");
+    this.player2id.send("testing");
   }
 }
