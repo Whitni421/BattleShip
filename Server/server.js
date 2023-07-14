@@ -33,7 +33,7 @@ wss.on("connection", function (ws) {
   // This is the new client connection
   console.log("New `ws` client connected");
   // Generate a unique ID for the client
-  const clientId = generateClientId();
+  const clientId = ws;
 
   // Store client information
   clients.set(ws, clientId);
@@ -80,7 +80,8 @@ function addPlayer(player, id) {
     );
     openGames.shift();
     openGames.shift();
-    console.log(playingGames);
+    playingGames[index].player1id.send("connected to websocket player 1");
+    playingGames[index].player2id.send("connected to websocket player2");
   }
 }
 //creates random id
