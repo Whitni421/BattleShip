@@ -80,13 +80,9 @@ function addPlayer(player, id) {
     );
     openGames.shift();
     openGames.shift();
-    playingGames[index].player1id.send("connected to websocket player 1");
-    playingGames[index].player2id.send("connected to websocket player2");
+    playingGames[index].player1id.send(playingGames[index].player2name);
+    playingGames[index].player2id.send(playingGames[index].player1name);
   }
-}
-//creates random id
-function generateClientId() {
-  return Date.now();
 }
 class game {
   constructor(player1, player2, index) {
