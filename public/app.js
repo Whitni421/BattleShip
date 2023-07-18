@@ -3,7 +3,6 @@ const URL = "http://localhost:8080/";
 ws.addEventListener("open", () => {
   console.log("client connected");
 });
-
 document.addEventListener("DOMContentLoaded", function () {
   const canvas = document.getElementById("canvas");
   console.log(canvas);
@@ -163,7 +162,7 @@ class Game {
     this.height = this.canvas.height;
     this.topMargin = 260;
     this.debug = true;
-    this.player = new Player(this);
+    this.player = []
     this.numberOfObstacles = 10;
     this.obstacles = [];
     this.mouse = {
@@ -202,7 +201,7 @@ class Game {
 
 class Player {
   constructor() {
-    this.username = { username: "" };
+    this.username = '';
     this.ships = [];
     this.parrot = true;
     this.board = [
@@ -219,11 +218,7 @@ class Player {
     ];
   }
 
-  insertParrot() {
-    if (this.parrot == true) {
-    } else {
-    }
-  }
+
 
   createShips() {
     let ship5 = new Ship(5);
@@ -245,7 +240,27 @@ class Player {
       this.board[location[0]][location[1]] = 5;
     }
   }
+
+  insertParrot(coordinates) {
+    if (this.parrot == true) {
+      hover = [this.board[coordinates[0]][coordinates[1]],this.board[coordinates[0 +1]][coordinates[1]],this.board[coordinates[0]][coordinates[1 +1]],this.board[coordinates[0+1]][coordinates[1+1]]]
+      for(i in hover){
+        if (i == 5){
+          i = 2
+          i.classList.add('.hit')
+        }
+        if (i == 0)
+        i = 1
+        i.classList.add('.revealed')
+      }
+    }
+    else{
+      return
+    }
+  }
 }
+
+
 
 class Ship {
   constructor(type) {
@@ -260,10 +275,15 @@ Vue.createApp({
   data() {
     return {
       page: "page1",
-      username: 0,
+      username: "",
+      player_turn: 0
+
     };
   },
   methods: {
+    gameWindow: function (){
+      games[0]
+    },
     connect: function () {
       // 1: Connect to websocket
       const protocol = window.location.protocol.includes("https")
@@ -277,21 +297,64 @@ Vue.createApp({
         console.log("WS message:", event.data);
       };
     },
+    checkSunk: function(){
+      var count = 0
+      for (i in Game.player.ships){
+        for (location in locations){
+          if (board[locations] != 3) {
+            return
+          }
+          else{
+            count++
+          }
+        if (count == location.length){
+          Ship.sunk = true;
+        }
+        }
+        if (Ship.sunk == true){
+          for (location in locations){
+            location.classList.add('.sunk');
+          }
+        }
+
+      }
+    },
     load_screen: function () {
-      // Send message through websocket
+      // Send username through websocket
       this.page = "page2";
-      this.socket.send("<username>" + this.username);
+      this.socket.send("<username>" + this.username)
     },
     getMessageWS: function () {
       // Get message through websocket
       this.socket.onmessage = function (event) {
         console.log(event.data);
-        if (event == "<waiting>") {
+        if (event == "username") {
           page = "page2";
+          var player = new Player(event);
+          Game.push(player = this.player)
+          console.log(event);
         }
-        if (event == "<playing>") {
+        if (event.toString().startsWith("<board>")) {
           page = "page3";
+          var game = JSON.parse(event)
+          for (i in game.keys()){
+            var player = new Player.push(i)
+          }
+          console.log(player);
+          // var Player1 = new Player(username = game.player1)
         }
+        if (event.toString().startsWith("<attack>")) {
+          if (player_turn == 0){
+            Game.player[0].board.push("tuple");
+            player_turn = 1
+            
+          }
+          if (player_turn == 1){
+            Game.player[1].board.push("tuple");
+            player_turn = 0
+          }
+        }
+          
       };
     },
   },
