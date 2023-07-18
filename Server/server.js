@@ -55,7 +55,10 @@ wss.on("connection", function (ws) {
     }
   });
 });
-
+webSocket.on("close", function (ws) {
+  delete w[userID];
+  console.log("deleted: " + userID);
+});
 app.post("/messages", function (req, res) {
   // Handle message through HTTP
   console.log("Got a message through HTTP: ", req.body.message);
@@ -80,30 +83,59 @@ function addPlayer(player, id) {
     );
     openGames.shift();
     openGames.shift();
-    playingGames[index].player1id.send(playingGames[index].player2name);
-    playingGames[index].player2id.send(playingGames[index].player1name);
+    playingGames[index].player1id.send(
+      json.stringify(playingGames[index].player1)
+    );
+    playingGames[index].player2id.send(
+      json.stringify(playingGames[index].player2)
+    );
   }
 }
 class game {
   constructor(player1, player2, index) {
-    this.player1id = player1[0];
-    this.player1name = player1[1];
-    this.player2name = player2[1];
-    this.player2id = player2[0];
+    this.player1 = {
+      Name: player1[0],
+      id: player1[1],
+      player2name: player2[0],
+      index: index,
+      board: [
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      ],
+    };
+    this.player2 = {
+      Name: player2[0],
+      id: player2[1],
+      player1name: player1[0],
+      index: index,
+      board: [
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      ],
+    };
+    // this.player1id = player1[0];
+    // this.player1name = player1[1];
+    // this.player2name = player2[1];
+    // this.player2id = player2[0];
     this.index = index;
-    this.board = [
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    ];
   }
+
   sendBoards() {
     this.player1id.send("testing");
     this.player2id.send("testing");
