@@ -101,7 +101,6 @@ function addPlayer(player, id) {
 function prepareSend(object, player) {
   if (player === "player1") {
     return {
-      player,
       player1: {
         name: object.player1.name,
         board: object.player1.board,
@@ -114,7 +113,6 @@ function prepareSend(object, player) {
     };
   } else if (player === "player2") {
     return {
-      player,
       player1: {
         name: object.player1.name,
         board: replaceFiveWithZero(object.player1.board),
