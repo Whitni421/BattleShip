@@ -45,7 +45,6 @@ wss.on("connection", function (ws) {
       const clientId = clients.get(ws);
       // client.set(clientid, ws);
       console.log(username);
-      console.log(clientId);
       addPlayer(username, clientId);
     }
     if (message.toString().startsWith("<attack>")) {
@@ -54,11 +53,12 @@ wss.on("connection", function (ws) {
       broadcast(username);
     }
   });
+  // ws.on("close", function (ws) {
+  //   delete ws[userID];
+  //   console.log("deleted: " + userID);
+  // });
 });
-webSocket.on("close", function (ws) {
-  delete w[userID];
-  console.log("deleted: " + userID);
-});
+
 app.post("/messages", function (req, res) {
   // Handle message through HTTP
   console.log("Got a message through HTTP: ", req.body.message);
@@ -75,29 +75,75 @@ function broadcast(message) {
 function addPlayer(player, id) {
   //makes a tuple and adds it to the list of players looking for a game
   openGames.push([id, player]);
+  var indexvar = 0;
   if (openGames.length > 1) {
-    var index = playingGames.length;
-    playingGames.push(
-      new game(openGames[0], openGames[1]),
-      playingGames.length
-    );
+    if (playingGames == undefined) {
+      indexvar = 0;
+    } else {
+      indexvar = playingGames.length;
+    }
+    console.log(indexvar);
+
+    playingGames.push(new game(openGames[0], openGames[1], indexvar));
     openGames.shift();
     openGames.shift();
-    playingGames[index].player1id.send(
-      json.stringify(playingGames[index].player1)
+    console.log(indexvar);
+    console.log(playingGames[indexvar]);
+    playingGames[indexvar].player1.id.send(
+      "<board>" + JSON.stringify(prepareSend(playingGames[indexvar], "player1"))
     );
-    playingGames[index].player2id.send(
-      json.stringify(playingGames[index].player2)
+    playingGames[indexvar].player2.id.send(
+      "<board>" + JSON.stringify(prepareSend(playingGames[indexvar], "player2"))
     );
   }
 }
+//prepares data to be sent
+function prepareSend(object, player) {
+  if (player === "player1") {
+    return {
+      player,
+      player1: {
+        name: object.player1.name,
+        board: object.player1.board,
+      },
+      player2: {
+        name: object.player2.name,
+        board: replaceFiveWithZero(object.player2.board),
+      },
+      index: object.index,
+    };
+  } else if (player === "player2") {
+    return {
+      player,
+      player1: {
+        name: object.player1.name,
+        board: replaceFiveWithZero(object.player1.board),
+      },
+      player2: {
+        name: object.player2.name,
+        board: object.player2.board,
+      },
+      index: object.index,
+    };
+  }
+}
+function replaceFiveWithZero(arr) {
+  for (let i = 0; i < arr.length; i++) {
+    for (let j = 0; j < arr[i].length; j++) {
+      if (arr[i][j] === 5) {
+        arr[i][j] = 0;
+      }
+    }
+  }
+  return arr; // Return the modified array
+}
 class game {
-  constructor(player1, player2, index) {
+  constructor(player1, player2, varindex) {
+    console.log(varindex);
     this.player1 = {
-      Name: player1[0],
-      id: player1[1],
-      player2name: player2[0],
-      index: index,
+      name: player1[1],
+      id: player1[0],
+      index: varindex,
       board: [
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -112,10 +158,9 @@ class game {
       ],
     };
     this.player2 = {
-      Name: player2[0],
-      id: player2[1],
-      player1name: player1[0],
-      index: index,
+      name: player2[1],
+      id: player2[0],
+      index: varindex,
       board: [
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -129,11 +174,7 @@ class game {
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       ],
     };
-    // this.player1id = player1[0];
-    // this.player1name = player1[1];
-    // this.player2name = player2[1];
-    // this.player2id = player2[0];
-    this.index = index;
+    this.index = varindex;
   }
 
   sendBoards() {
