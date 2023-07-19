@@ -53,10 +53,20 @@ wss.on("connection", function (ws) {
       broadcast(username);
     }
   });
-  // ws.on("close", function (ws) {
-  //   delete ws[userID];
-  //   console.log("deleted: " + userID);
-  // });
+  ws.on("close", function () {
+    const clientId = clients.get(ws);
+    if (clientId) {
+      const gameIndex = openGames.findIndex((game) => game[0] === clientId);
+      if (gameIndex !== -1) {
+        console.log(
+          openGames[gameIndex][1] + " client disconnected from queue"
+        );
+        openGames.splice(gameIndex, 1);
+      }
+    }
+    // Remove the client from the clients map
+    clients.delete(ws);
+  });
 });
 
 app.post("/messages", function (req, res) {
