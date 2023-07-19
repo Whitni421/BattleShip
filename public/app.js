@@ -6,7 +6,7 @@ ws.addEventListener("open", () => {
   console.log("client connected");
 });
 
-window.addEventListener("load", function () {
+window.addEventListener("DOMContentload", function () {
   canvas = document.getElementById("canvas");
   ctx = canvas.getContext("2d");
   canvas.width = window.innerWidth * 0.75;
@@ -290,7 +290,7 @@ window.addEventListener("load", function () {
 Vue.createApp({
   data() {
     return {
-      page: "page1",
+      page: 1,
       username: "",
       player_turn: 0,
     };
@@ -309,7 +309,14 @@ Vue.createApp({
         console.log("Connected to websocket");
       };
       this.socket.onmessage = function (event) {
-        console.log("WS message:", event.data);
+        console.log(event.data);
+        msg = JSON.parse(event.data);
+        if (msg.EventType == "initialize") {
+          console.log("success");
+          console.log(msg.Data);
+          this.page = 3;
+          console.log(this.page);
+        }
       };
     },
     checkSunk: function () {

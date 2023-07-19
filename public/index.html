@@ -10,7 +10,7 @@
   </head>
   <body>
     <div id="app">
-      <div id="page1 page" v-on="load" v-if="page === 'page1'">
+      <div id="page1" v-on="load" v-if="page==1">
         <h3>Enter Username</h3>
         <input
           id="username_bar"
@@ -19,14 +19,21 @@
           v-model="username"
         />
         <button @click="load_screen()">Play</button>
-        <canvas id="canvas"></canvas>
         <img id="ship" src="../images/ships.png" />
       </div>
-      <div id="page2 page" v-if="page == 'page2'">
+      <div id="page2" v-else-if="page==2">
         <h3 class="loading">loading</h3>
       </div>
-      <div id="game page3" v-if="page == 'page3'"></div>
-      <div id="win page" v-if="page == 'winpage'">Player ___ Won!</div>
+      <div id="page3" v-else-if="page==3">
+        <div>display this</div>
+        <h3>Place your Ships</h3>
+        <canvas id="canvas"></canvas>
+        <button @click="insertShips()">Enter</button>
+      </div>
+      <!-- <div id="page4 page" v-if="page == 'page4'">
+        <div id="player1-board">
+      </div> -->
+      <div id="win page" v-if="page=='winpage'">Player ___ Won!</div>
     </div>
   </body>
   <script src="app.js"></script>

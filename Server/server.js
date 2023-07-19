@@ -40,17 +40,23 @@ wss.on("connection", function (ws) {
 
   // Handle message through websocket
   ws.on("message", function incoming(message) {
-    if (message.toString().startsWith("<username>")) {
-      var username = message.toString().replace("<username>", "");
+    msg = JSON.parse(message);
+    //checks message events
+    if (msg.EventType == "username") {
+      var username = msg.Data.user;
       const clientId = clients.get(ws);
       // client.set(clientid, ws);
       console.log(username);
       addPlayer(username, clientId);
     }
-    if (message.toString().startsWith("<attack>")) {
-      var username = message.toString().replace("<username>", "");
-      console.log("Got a message through WS: ", username);
-      broadcast(username);
+    if (msg.EventType == "attack") {
+      attackFunction(msg.Data);
+    }
+    if (msg.EventType == "parrot") {
+      parrotFunction(msg.Data);
+    }
+    if (msg.EventType == "UpdateBoard") {
+      updateBoard(msg.Data);
     }
   });
   ws.on("close", function () {
@@ -67,13 +73,6 @@ wss.on("connection", function (ws) {
     // Remove the client from the clients map
     clients.delete(ws);
   });
-});
-
-app.post("/messages", function (req, res) {
-  // Handle message through HTTP
-  console.log("Got a message through HTTP: ", req.body.message);
-  broadcast(req.body.message);
-  res.sendStatus(200);
 });
 
 function broadcast(message) {
@@ -100,10 +99,16 @@ function addPlayer(player, id) {
     console.log(indexvar);
     console.log(playingGames[indexvar]);
     playingGames[indexvar].player1.id.send(
-      "<board>" + JSON.stringify(prepareSend(playingGames[indexvar], "player1"))
+      JSON.stringify({
+        EventType: "initialize",
+        Data: prepareSend(playingGames[indexvar], "player1"),
+      })
     );
     playingGames[indexvar].player2.id.send(
-      "<board>" + JSON.stringify(prepareSend(playingGames[indexvar], "player2"))
+      JSON.stringify({
+        EventType: "initialize",
+        Data: prepareSend(playingGames[indexvar], "player2"),
+      })
     );
   }
 }
@@ -152,6 +157,7 @@ class game {
       name: player1[1],
       id: player1[0],
       index: varindex,
+      updated: true,
       board: [
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -169,6 +175,7 @@ class game {
       name: player2[1],
       id: player2[0],
       index: varindex,
+      updated: false,
       board: [
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -184,9 +191,69 @@ class game {
     };
     this.index = varindex;
   }
-
-  sendBoards() {
-    this.player1id.send("testing");
-    this.player2id.send("testing");
+}
+//attack function
+function attackFunction(data) {
+  game = playingGames[data.index];
+  //checks to see if player is one
+  if (data.player == "player1") {
+    //if there is a ship at location it changes it to attacked ship if not it changes it to miss
+    if (game.player2.board[data.cords[0]][data.cords[1]] == 5) {
+      game.player2.board[data.cords[0]][data.cords[1]] = 3;
+    } else if (game.player2.board[data.cords[0]][data.cords[1]] == 0) {
+      game.player2.board[data.cords[0]][data.cords[1]] = 1;
+    }
+    sendData("Attack", data.index);
   }
+  //checks to see if player2
+  if (data.player == "player2") {
+    //if there is a ship at location it changes it to attacked ship if not it changes it to miss
+    if (game.player1.board[data.cords[0]][data.cords[1]] == 5) {
+      game.player1.board[data.cords[0]][data.cords[1]] = 3;
+    } else if (game.player1.board[data.cords[0]][data.cords[1]] == 0) {
+      game.player1.board[data.cords[0]][data.cords[1]] = 1;
+    }
+    sendData("Attack", data.index);
+  }
+}
+//function sends data back to players
+function sendData(type, indexvar) {
+  playingGames[indexvar].player1.id.send(
+    JSON.stringify({
+      EventType: type,
+      Data: prepareSend(playingGames[indexvar], "player1"),
+    })
+  );
+  playingGames[indexvar].player2.id.send(
+    JSON.stringify({
+      EventType: type,
+      Data: prepareSend(playingGames[indexvar], "player2"),
+    })
+  );
+}
+function checkWin(game) {
+  return;
+}
+
+//updates boards after player creates them
+function updateBoard(data) {
+  index = data.index;
+  game = playingGames[index];
+  //updates player ones board when created
+  if (data.player == "player1") {
+    game.player1.board = data.board;
+    game.player1.updated = true;
+  }
+  //updates player twos board on server when created
+  if (data.player == "player2") {
+    game.player2.board = data.board;
+    game.player2.updated = true;
+  }
+  //once both players create a board it sends the boards back to players
+  if (game.player2.updated && game.player1.updated) {
+    sendData("updateBoards", index);
+  }
+}
+function parrotFunction(data) {
+  return;
 }

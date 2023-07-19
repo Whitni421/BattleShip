@@ -3,6 +3,19 @@
   padding: 0;
   box-sizing: border-box;
 }
+<<<<<<< HEAD
 #ship {
   /* display: none; */
 }
+=======
+
+.sunk {
+  background-color:red;
+}
+
+.revealed{
+  background-color:purple;
+}
+
+
+>>>>>>> 064d9f17a39073bda550a7b7e47995aaaf9560e2
