@@ -48,7 +48,9 @@ wss.on("connection", function (ws) {
       addPlayer(username, clientId);
     }
     if (message.toString().startsWith("<attack>")) {
-      var username = message.toString().replace("<username>", "");
+      var attackmsg = message.toString().replace("<username>", "");
+      var attack = JSON.parse(attackmsg);
+
       console.log("Got a message through WS: ", username);
       broadcast(username);
     }
@@ -100,10 +102,16 @@ function addPlayer(player, id) {
     console.log(indexvar);
     console.log(playingGames[indexvar]);
     playingGames[indexvar].player1.id.send(
-      "<board>" + JSON.stringify(prepareSend(playingGames[indexvar], "player1"))
+      JSON.stringify({
+        EventType: "inititlize",
+        Data: prepareSend(playingGames[indexvar], "player1"),
+      })
     );
     playingGames[indexvar].player2.id.send(
-      "<board>" + JSON.stringify(prepareSend(playingGames[indexvar], "player2"))
+      JSON.stringify({
+        EventType: "initilize",
+        Data: prepareSend(playingGames[indexvar], "player2"),
+      })
     );
   }
 }
@@ -183,10 +191,5 @@ class game {
       ],
     };
     this.index = varindex;
-  }
-
-  sendBoards() {
-    this.player1id.send("testing");
-    this.player2id.send("testing");
   }
 }
