@@ -268,7 +268,7 @@ window.addEventListener("DOMContentload", function () {
 Vue.createApp({
   data() {
     return {
-      page: "page1",
+      page: 1,
       username: "",
       player_turn: 0,
     };
@@ -289,7 +289,7 @@ Vue.createApp({
         if (msg.EventType == "initialize") {
           console.log("success");
           console.log(msg.Data);
-          this.page = "page3";
+          this.page = 3;
           console.log(this.page);
         }
       };
@@ -316,7 +316,7 @@ Vue.createApp({
     },
     load_screen: function () {
       // Send username through websocket
-      this.page = "page2";
+      this.page = 2;
       this.socket.send(
         JSON.stringify({
           EventType: "username",
