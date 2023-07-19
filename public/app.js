@@ -54,7 +54,6 @@ window.addEventListener("load", function () {
     };
 
     drawGrid = () => {
-      console.log("drawGrid");
       ctx.clearRect(0, 0, this.gridWidth, this.gridHeight);
       this.gridLines();
 
@@ -96,7 +95,8 @@ window.addEventListener("load", function () {
       this.game = game;
       this.username = { username: "" };
       this.ships = [];
-      this.parrot = true;
+      this.parrot = true; //parrot sprite width and height 90, 65
+      //kraken sprite width and height 95, 75
       this.board = [
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -111,21 +111,21 @@ window.addEventListener("load", function () {
       ];
     }
 
-
+    attack(coordinates) {}
 
     createShips() {
-      let ship5 = new Ship(5, this);
+      let ship5 = new Ship(5, this, 100, 0, 90, 300, 800, 0, 90, 300);
       this.ships.push(ship5);
       // for i in range(2) in javascript
       for (let i = 0; i < 2; i++) {
-        let ship = new Ship(4, this);
+        let ship = new Ship(4, this, 250, 0, 100, 250, 800, 100, 100, 250);
         this.ships.push(ship);
       }
       for (let i = 0; i < 2; i++) {
-        let ship = new Ship(3, this);
+        let ship = new Ship(3, this, 0, 0, 100, 200, 800, 200, 100, 200);
         this.ships.push(ship);
       }
-      let ship2 = new Ship(2, this);
+      let ship2 = new Ship(2, this, 200, 0, 60, 150, 800, 300, 60, 150);
       this.ships.push(ship2);
     }
 
@@ -136,51 +136,66 @@ window.addEventListener("load", function () {
     }
     draw() {
       for (let ship of this.ships) {
+        console.log(ship);
         ship.draw();
       }
     }
-  }
-  insertShips() {
-    for (location in this.ships.location) {
-      this.board[location[0]][location[1]] = 5;
-    }
-  }
 
-  insertParrot(coordinates) {
-    if (this.parrot == true) {
-      hover = [this.board[coordinates[0]][coordinates[1]],this.board[coordinates[0 +1]][coordinates[1]],this.board[coordinates[0]][coordinates[1 +1]],this.board[coordinates[0+1]][coordinates[1+1]]]
-      for(i in hover){
-        if (i == 5){
-          i = 2
-          i.classList.add('.hit')
-        }
-        if (i == 0)
-        i = 1
-        i.classList.add('.revealed')
+    insertShips() {
+      for (location in this.ships.location) {
+        this.board[location[0]][location[1]] = 5;
       }
     }
-    else{
-      return
+
+    insertParrot(coordinates) {
+      if (this.parrot == true) {
+        hover = [
+          this.board[coordinates[0]][coordinates[1]],
+          this.board[coordinates[0 + 1]][coordinates[1]],
+          this.board[coordinates[0]][coordinates[1 + 1]],
+          this.board[coordinates[0 + 1]][coordinates[1 + 1]],
+        ];
+        for (i in hover) {
+          if (i == 5) {
+            i = 2;
+            i.classList.add(".hit");
+          }
+          if (i == 0) i = 1;
+          i.classList.add(".revealed");
+        }
+      } else {
+        return;
+      }
     }
   }
 
-
   class Ship {
-    constructor(type, player) {
+    constructor(
+      type,
+      player,
+      spriteWidth,
+      spriteHeight,
+      spriteX,
+      spriteY,
+      x,
+      y,
+      width,
+      height
+    ) {
       this.player = player;
       this.rotation = false;
       this.location = [];
       this.sunk = false;
       this.type = type;
       this.image = document.getElementById("ship");
-      this.spriteX = 0;
-      this.spriteY = 0;
-      this.spriteWidth = 840 / 4;
-      this.spriteHeight = 858 / 4;
-      this.x = 1000;
-      this.y = 100;
-      this.width = 100;
-      this.height = 100;
+      this.spriteX = spriteX;
+      this.spriteY = spriteY;
+      this.spriteWidth = spriteWidth;
+      this.spriteHeight = spriteHeight;
+      this.x = x;
+      this.y = y;
+      this.width = width;
+      this.height = height;
       this.isDragging = false;
       this.startX = 0;
       this.startY = 0;
@@ -265,6 +280,7 @@ window.addEventListener("load", function () {
   function init() {
     const game = new Game(canvas);
     game.player.createShips();
+    console.log(game.player.ships);
     game.render(ctx);
   }
 
@@ -276,13 +292,12 @@ Vue.createApp({
     return {
       page: "page1",
       username: "",
-      player_turn: 0
-
+      player_turn: 0,
     };
   },
   methods: {
-    gameWindow: function (){
-      games[0]
+    gameWindow: function () {
+      games[0];
     },
     connect: function () {
       // 1: Connect to websocket
@@ -297,32 +312,30 @@ Vue.createApp({
         console.log("WS message:", event.data);
       };
     },
-    checkSunk: function(){
-      var count = 0
-      for (i in Game.player.ships){
-        for (location in locations){
+    checkSunk: function () {
+      var count = 0;
+      for (i in Game.player.ships) {
+        for (location in locations) {
           if (board[locations] != 3) {
-            return
+            return;
+          } else {
+            count++;
           }
-          else{
-            count++
-          }
-        if (count == location.length){
-          Ship.sunk = true;
-        }
-        }
-        if (Ship.sunk == true){
-          for (location in locations){
-            location.classList.add('.sunk');
+          if (count == location.length) {
+            Ship.sunk = true;
           }
         }
-
+        if (Ship.sunk == true) {
+          for (location in locations) {
+            location.classList.add(".sunk");
+          }
+        }
       }
     },
     load_screen: function () {
       // Send username through websocket
       this.page = "page2";
-      this.socket.send("<username>" + this.username)
+      this.socket.send("<username>" + this.username);
     },
     getMessageWS: function () {
       // Get message through websocket
@@ -331,30 +344,28 @@ Vue.createApp({
         if (event == "username") {
           page = "page2";
           var player = new Player(event);
-          Game.push(player = this.player)
+          Game.push((player = this.player));
           console.log(event);
         }
         if (event.toString().startsWith("<board>")) {
           page = "page3";
-          var game = JSON.parse(event)
-          for (i in game.keys()){
-            var player = new Player.push(i)
+          var game = JSON.parse(event);
+          for (i in game.keys()) {
+            var player = new Player.push(i);
           }
           console.log(player);
           // var Player1 = new Player(username = game.player1)
         }
         if (event.toString().startsWith("<attack>")) {
-          if (player_turn == 0){
+          if (player_turn == 0) {
             Game.player[0].board.push("tuple");
-            player_turn = 1
-            
+            player_turn = 1;
           }
-          if (player_turn == 1){
+          if (player_turn == 1) {
             Game.player[1].board.push("tuple");
-            player_turn = 0
+            player_turn = 0;
           }
         }
-          
       };
     },
   },
