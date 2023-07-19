@@ -156,6 +156,7 @@ class game {
       name: player1[1],
       id: player1[0],
       index: varindex,
+      updated: true,
       board: [
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -173,6 +174,7 @@ class game {
       name: player2[1],
       id: player2[0],
       index: varindex,
+      updated: false,
       board: [
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -227,7 +229,19 @@ function checkWin(game) {
   return;
 }
 function updateBoard(data) {
-  return;
+  index = data.index;
+  game = playingGames[index];
+  if (data.player == "player1") {
+    game.player1.board = data.board;
+    game.player1.updated = true;
+  }
+  if (data.player == "player2") {
+    game.player2.board = data.board;
+    game.player2.updated = true;
+  }
+  if (game.player2.updated && game.player1.updated) {
+    sendData("updateBoards", index);
+  }
 }
 function parrotFunction(data) {
   return;
