@@ -103,13 +103,13 @@ function addPlayer(player, id) {
     console.log(playingGames[indexvar]);
     playingGames[indexvar].player1.id.send(
       JSON.stringify({
-        EventType: "inititlize",
+        EventType: "initialize",
         Data: prepareSend(playingGames[indexvar], "player1"),
       })
     );
     playingGames[indexvar].player2.id.send(
       JSON.stringify({
-        EventType: "initilize",
+        EventType: "initialize",
         Data: prepareSend(playingGames[indexvar], "player2"),
       })
     );
