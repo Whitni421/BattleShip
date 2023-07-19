@@ -54,6 +54,7 @@ window.addEventListener("DOMContentload", function () {
     };
 
     drawGrid = () => {
+      console.log("drawGrid");
       ctx.clearRect(0, 0, this.gridWidth, this.gridHeight);
       this.gridLines();
 
@@ -95,8 +96,7 @@ window.addEventListener("DOMContentload", function () {
       this.game = game;
       this.username = { username: "" };
       this.ships = [];
-      this.parrot = true; //parrot sprite width and height 90, 65
-      //kraken sprite width and height 95, 75
+      this.parrot = true;
       this.board = [
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -111,21 +111,19 @@ window.addEventListener("DOMContentload", function () {
       ];
     }
 
-    attack(coordinates) {}
-
     createShips() {
-      let ship5 = new Ship(5, this, 100, 0, 90, 300, 800, 0, 90, 300);
+      let ship5 = new Ship(5, this);
       this.ships.push(ship5);
       // for i in range(2) in javascript
       for (let i = 0; i < 2; i++) {
-        let ship = new Ship(4, this, 250, 0, 100, 250, 800, 100, 100, 250);
+        let ship = new Ship(4, this);
         this.ships.push(ship);
       }
       for (let i = 0; i < 2; i++) {
-        let ship = new Ship(3, this, 0, 0, 100, 200, 800, 200, 100, 200);
+        let ship = new Ship(3, this);
         this.ships.push(ship);
       }
-      let ship2 = new Ship(2, this, 200, 0, 60, 150, 800, 300, 60, 150);
+      let ship2 = new Ship(2, this);
       this.ships.push(ship2);
     }
 
@@ -136,14 +134,7 @@ window.addEventListener("DOMContentload", function () {
     }
     draw() {
       for (let ship of this.ships) {
-        console.log(ship);
         ship.draw();
-      }
-    }
-
-    insertShips() {
-      for (location in this.ships.location) {
-        this.board[location[0]][location[1]] = 5;
       }
     }
 
@@ -164,38 +155,27 @@ window.addEventListener("DOMContentload", function () {
           i.classList.add(".revealed");
         }
       } else {
-        return;
+        pass;
       }
     }
   }
 
   class Ship {
-    constructor(
-      type,
-      player,
-      spriteWidth,
-      spriteHeight,
-      spriteX,
-      spriteY,
-      x,
-      y,
-      width,
-      height
-    ) {
+    constructor(type, player) {
       this.player = player;
       this.rotation = false;
       this.location = [];
       this.sunk = false;
       this.type = type;
       this.image = document.getElementById("ship");
-      this.spriteX = spriteX;
-      this.spriteY = spriteY;
-      this.spriteWidth = spriteWidth;
-      this.spriteHeight = spriteHeight;
-      this.x = x;
-      this.y = y;
-      this.width = width;
-      this.height = height;
+      this.spriteX = 0;
+      this.spriteY = 0;
+      this.spriteWidth = 840 / 4;
+      this.spriteHeight = 858 / 4;
+      this.x = 1000;
+      this.y = 100;
+      this.width = 100;
+      this.height = 100;
       this.isDragging = false;
       this.startX = 0;
       this.startY = 0;
@@ -276,11 +256,9 @@ window.addEventListener("DOMContentload", function () {
       // canvas.onmouseup = mouse_up;
     }
   }
-
   function init() {
     const game = new Game(canvas);
     game.player.createShips();
-    console.log(game.player.ships);
     game.render(ctx);
   }
 
@@ -296,9 +274,6 @@ Vue.createApp({
     };
   },
   methods: {
-    gameWindow: function () {
-      games[0];
-    },
     connect: function () {
       // 1: Connect to websocket
       const protocol = window.location.protocol.includes("https")
@@ -308,7 +283,7 @@ Vue.createApp({
       this.socket.onopen = function () {
         console.log("Connected to websocket");
       };
-      this.socket.onmessage = function (event) {
+      this.socket.onmessage = (event) => {
         console.log(event.data);
         msg = JSON.parse(event.data);
         if (msg.EventType == "initialize") {
@@ -341,39 +316,13 @@ Vue.createApp({
     },
     load_screen: function () {
       // Send username through websocket
-      this.page = "page2";
-      this.socket.send("<username>" + this.username);
-    },
-    getMessageWS: function () {
-      // Get message through websocket
-      this.socket.onmessage = function (event) {
-        console.log(event.data);
-        if (event == "username") {
-          page = "page2";
-          var player = new Player(event);
-          Game.push((player = this.player));
-          console.log(event);
-        }
-        if (event.toString().startsWith("<board>")) {
-          page = "page3";
-          var game = JSON.parse(event);
-          for (i in game.keys()) {
-            var player = new Player.push(i);
-          }
-          console.log(player);
-          // var Player1 = new Player(username = game.player1)
-        }
-        if (event.toString().startsWith("<attack>")) {
-          if (player_turn == 0) {
-            Game.player[0].board.push("tuple");
-            player_turn = 1;
-          }
-          if (player_turn == 1) {
-            Game.player[1].board.push("tuple");
-            player_turn = 0;
-          }
-        }
-      };
+      this.page = 2;
+      this.socket.send(
+        JSON.stringify({
+          EventType: "username",
+          Data: { user: this.username },
+        })
+      );
     },
   },
   created: function () {

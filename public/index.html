@@ -10,7 +10,8 @@
   </head>
   <body>
     <div id="app">
-      <div id="page1" v-on="load" v-if="page==1">
+      <div>{{page}}</div>
+      <div id="page1" v-if="page==1">
         <h3>Enter Username</h3>
         <input
           id="username_bar"
