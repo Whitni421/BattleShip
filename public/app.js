@@ -163,7 +163,7 @@ window.addEventListener("load", function () {
       return
     }
   }
-}
+
 
   class Ship {
     constructor(type, player) {
@@ -261,6 +261,7 @@ window.addEventListener("load", function () {
       // canvas.onmouseup = mouse_up;
     }
   }
+
   function init() {
     const game = new Game(canvas);
     game.player.createShips();
