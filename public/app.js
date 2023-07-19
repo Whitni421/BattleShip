@@ -6,7 +6,7 @@ ws.addEventListener("open", () => {
   console.log("client connected");
 });
 
-window.addEventListener("load", function () {
+window.addEventListener("DOMContentload", function () {
   canvas = document.getElementById("canvas");
   ctx = canvas.getContext("2d");
   canvas.width = window.innerWidth * 0.75;
@@ -138,11 +138,6 @@ window.addEventListener("load", function () {
       }
     }
 
-    insertShips() {
-      for (location in this.ships.location) {
-        this.board[location[0]][location[1]] = 5;
-      }
-    }
 
     insertParrot(coordinates) {
       if (this.parrot == true) {
@@ -161,7 +156,7 @@ window.addEventListener("load", function () {
           i.classList.add(".revealed");
         }
       } else {
-        return;
+        pass
       }
     }
   }
@@ -280,9 +275,6 @@ Vue.createApp({
     };
   },
   methods: {
-    gameWindow: function () {
-      games[0];
-    },
     connect: function () {
       // 1: Connect to websocket
       const protocol = window.location.protocol.includes("https")
@@ -298,6 +290,8 @@ Vue.createApp({
         if (msg.EventType == "initialize") {
           console.log("success");
           console.log(msg.Data);
+          this.page = "page3";
+          console.log(this.page);
         }
       };
     },
@@ -325,7 +319,8 @@ Vue.createApp({
       // Send username through websocket
       this.page = "page2";
       this.socket.send("<username>" + this.username);
-    },
+    }
+      
   },
   created: function () {
     this.connect();
