@@ -47,12 +47,12 @@ wss.on("connection", function (ws) {
       console.log(username);
       addPlayer(username, clientId);
     }
-    if (message.toString().startsWith("<attack>")) {
-      var attackmsg = message.toString().replace("<username>", "");
-      var attack = JSON.parse(attackmsg);
-
-      console.log("Got a message through WS: ", username);
-      broadcast(username);
+    msg = JSON.parse(message);
+    if (msg.EventType == "attack") {
+      attackFunction(msg.Data);
+    }
+    if (msg.EventType == "parrot") {
+      parrotFunction(msg.Data);
     }
   });
   ws.on("close", function () {
@@ -69,13 +69,6 @@ wss.on("connection", function (ws) {
     // Remove the client from the clients map
     clients.delete(ws);
   });
-});
-
-app.post("/messages", function (req, res) {
-  // Handle message through HTTP
-  console.log("Got a message through HTTP: ", req.body.message);
-  broadcast(req.body.message);
-  res.sendStatus(200);
 });
 
 function broadcast(message) {
@@ -192,4 +185,41 @@ class game {
     };
     this.index = varindex;
   }
+}
+
+function attackFunction(data) {
+  game = playingGames[data.index];
+  if (data.player == "player1") {
+    if (game.player2.board[data.cords[0]][data.cords[1]] == 5) {
+      game.player2.board[data.cords[0]][data.cords[1]] = 3;
+    } else if (game.player2.board[data.cords[0]][data.cords[1]] == 0) {
+      game.player2.board[data.cords[0]][data.cords[1]] = 1;
+    }
+    sendData("Attack", data.index);
+  }
+  if (data.player == "player2") {
+    if (game.player1.board[data.cords[0]][data.cords[1]] == 5) {
+      game.player1.board[data.cords[0]][data.cords[1]] = 3;
+    } else if (game.player1.board[data.cords[0]][data.cords[1]] == 0) {
+      game.player1.board[data.cords[0]][data.cords[1]] = 1;
+    }
+    sendData("Attack", data.index);
+  }
+}
+function sendData(type, indexvar) {
+  playingGames[indexvar].player1.id.send(
+    JSON.stringify({
+      EventType: type,
+      Data: prepareSend(playingGames[indexvar], "player1"),
+    })
+  );
+  playingGames[indexvar].player2.id.send(
+    JSON.stringify({
+      EventType: type,
+      Data: prepareSend(playingGames[indexvar], "player2"),
+    })
+  );
+}
+function parrotFunction(data) {
+  return;
 }
