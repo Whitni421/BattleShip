@@ -41,6 +41,7 @@ wss.on("connection", function (ws) {
   // Handle message through websocket
   ws.on("message", function incoming(message) {
     msg = JSON.parse(message);
+    //checks message events
     if (msg.EventType == "username") {
       var username = msg.Data.user;
       const clientId = clients.get(ws);
@@ -191,10 +192,12 @@ class game {
     this.index = varindex;
   }
 }
-
+//attack function
 function attackFunction(data) {
   game = playingGames[data.index];
+  //checks to see if player is one
   if (data.player == "player1") {
+    //if there is a ship at location it changes it to attacked ship if not it changes it to miss
     if (game.player2.board[data.cords[0]][data.cords[1]] == 5) {
       game.player2.board[data.cords[0]][data.cords[1]] = 3;
     } else if (game.player2.board[data.cords[0]][data.cords[1]] == 0) {
@@ -202,7 +205,9 @@ function attackFunction(data) {
     }
     sendData("Attack", data.index);
   }
+  //checks to see if player2
   if (data.player == "player2") {
+    //if there is a ship at location it changes it to attacked ship if not it changes it to miss
     if (game.player1.board[data.cords[0]][data.cords[1]] == 5) {
       game.player1.board[data.cords[0]][data.cords[1]] = 3;
     } else if (game.player1.board[data.cords[0]][data.cords[1]] == 0) {
@@ -211,6 +216,7 @@ function attackFunction(data) {
     sendData("Attack", data.index);
   }
 }
+//function sends data back to players
 function sendData(type, indexvar) {
   playingGames[indexvar].player1.id.send(
     JSON.stringify({
@@ -228,17 +234,22 @@ function sendData(type, indexvar) {
 function checkWin(game) {
   return;
 }
+
+//updates boards after player creates them
 function updateBoard(data) {
   index = data.index;
   game = playingGames[index];
+  //updates player ones board when created
   if (data.player == "player1") {
     game.player1.board = data.board;
     game.player1.updated = true;
   }
+  //updates player twos board on server when created
   if (data.player == "player2") {
     game.player2.board = data.board;
     game.player2.updated = true;
   }
+  //once both players create a board it sends the boards back to players
   if (game.player2.updated && game.player1.updated) {
     sendData("updateBoards", index);
   }
