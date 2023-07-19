@@ -1,240 +1,145 @@
 const ws = new WebSocket("ws://localhost:8080");
 const URL = "http://localhost:8080/";
+var canvas;
+var ctx;
 ws.addEventListener("open", () => {
   console.log("client connected");
 });
-document.addEventListener("DOMContentLoaded", function () {
-  const canvas = document.getElementById("canvas");
-  console.log(canvas);
-  const ctx = canvas.getContext("2d");
-  canvas.width = 1280;
-  canvas.height = 1000;
+
+window.addEventListener("load", function () {
+  canvas = document.getElementById("canvas");
+  ctx = canvas.getContext("2d");
+  canvas.width = window.innerWidth * 0.75;
+  canvas.height = window.innerHeight * 0.9;
   canvas.style.border = "5px solid black";
 
-  // use this to make it scalable
-  // canvas.width = window.innerWidth - 50;
-  // canvas.height = window.innerHeight - 50;
-
-  const ships = [];
-  ships.push({});
-
-  let offset_x;
-  let offset_y;
-
-  let get_offset = function () {
-    let canvas_offsets = canvas.getBoundingClientRect();
-    offset_x = canvas_offsets.left;
-    offset_y = canvas_offsets.top;
-  };
-
-  get_offset();
-  window.onscroll = function () {
-    get_offset();
-  };
   window.onresize = function () {
-    get_offset();
-  };
-  canvas.onresize = function () {
-    get_offset();
+    canvas.width = window.innerWidth * 0.75;
+    canvas.height = window.innerHeight * 0.9;
   };
 
-  let current_shape_index = null;
-  let is_dragging = false;
-  let startX;
-  let startY;
-
-  let is_mouse_in_shape = function (x, y, shape) {
-    let shape_left = shape.x;
-    let shape_right = shape.x + shape.width;
-    let shape_top = shape.y;
-    let shape_bottom = shape.y + shape.height;
-
-    if (x > shape_left && x < shape_right && y > shape_top && y < shape_bottom)
-      return true;
-    else return false;
-  };
-
-  let mouse_down = function (event) {
-    event.preventDefault();
-
-    startX = parseInt(event.clientX - offset_x);
-    startY = parseInt(event.clientY - offset_y);
-
-    let index = 0;
-    for (let shape of shapes) {
-      if (is_mouse_in_shape(startX, startY, shape)) {
-        current_shape_index = index;
-        is_dragging = true;
-        break;
+  class Game {
+    constructor() {
+      this.width = canvas.width;
+      this.height = canvas.height;
+      this.topMargin = 260;
+      this.debug = true;
+      this.player = new Player(this);
+      this.mouse = {
+        x: this.width * 0.5,
+        y: this.height * 0.5,
+        pressed: false,
+      };
+      this.gridHeight = canvas.height;
+      this.gridSize = 10;
+      this.cellSize = this.gridHeight / this.gridSize;
+      this.gridWidth = this.cellSize * this.gridSize;
+    }
+    gridLines = () => {
+      ctx.lineWidth = 1;
+      ctx.strokeStyle = "black";
+      2;
+      for (var row = 0; row < this.gridSize; row++) {
+        for (var col = 0; col < this.gridSize; col++) {
+          ctx.beginPath();
+          ctx.strokeRect(
+            col * this.cellSize,
+            row * this.cellSize,
+            this.cellSize,
+            this.cellSize
+          );
+          ctx.stroke();
+        }
       }
-      index++;
-    }
-  };
-
-  let mouse_up = function (event) {
-    if (!is_dragging) return;
-
-    event.preventDefault();
-    is_dragging = false;
-  };
-  let mouse_out = function (event) {
-    if (!is_dragging) return;
-
-    event.preventDefault();
-    is_dragging = false;
-  };
-
-  let mouse_move = function (event) {
-    if (!is_dragging) return;
-    else {
-      event.preventDefault();
-      let mouseX = parseInt(event.clientX - offset_x);
-      let mouseY = parseInt(event.clientY - offset_y);
-
-      let dx = mouseX - startX;
-      let dy = mouseY - startY;
-
-      let current_shape = shapes[current_shape_index];
-      current_shape.x += dx;
-      current_shape.y += dy;
-
-      draw_shapes();
-
-      startX = mouseX;
-      startY = mouseY;
-    }
-  };
-
-  canvas.onmousedown = mouse_down;
-  canvas.onmouseup = mouse_up;
-  canvas.onmouseout = mouse_up;
-  canvas.onmousemove = mouse_move;
-
-  const gridHeight = canvas.height;
-  const gridSize = 10;
-  const cellSize = gridHeight / gridSize;
-  const gridWidth = cellSize * gridSize;
-
-  function gridLines() {
-    ctx.lineWidth = 1;
-    ctx.strokeStyle = "black";
-
-    for (var row = 0; row < gridSize; row++) {
-      for (var col = 0; col < gridSize; col++) {
-        ctx.beginPath();
-        ctx.strokeRect(col * cellSize, row * cellSize, cellSize, cellSize);
-        ctx.stroke();
-      }
-    }
-  }
-
-  function drawGrid() {
-    ctx.clearRect(0, 0, gridWidth, gridHeight);
-    gridLines();
-
-    // Highlight the cell on mouse hover
-    canvas.addEventListener("mousemove", function (e) {
-      const rect = canvas.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-
-      const row = Math.floor(y / cellSize);
-      const col = Math.floor(x / cellSize);
-
-      // Clear previous highlight
-      ctx.clearRect(0, 0, gridWidth, gridHeight);
-
-      // Draw grid
-      gridLines();
-      ctx.fillStyle = "rgba(0, 0, 255, 0.2)";
-      ctx.fillRect(col * cellSize, row * cellSize, cellSize, cellSize);
-      // ctx.fillRect parameters: x, y, width, height
-    });
-  }
-
-  drawGrid();
-});
-
-class Game {
-  constructor(canvas) {
-    this.canvas = canvas;
-    this.width = this.canvas.width;
-    this.height = this.canvas.height;
-    this.topMargin = 260;
-    this.debug = true;
-    this.player = []
-    this.numberOfObstacles = 10;
-    this.obstacles = [];
-    this.mouse = {
-      x: this.width * 0.5,
-      y: this.height * 0.5,
-      pressed: false,
     };
 
-    // event listeners
-    canvas.addEventListener("mousedown", (e) => {
-      this.mouse.x = e.offsetX;
-      this.mouse.y = e.offsetY;
-      this.mouse.pressed = true;
-    });
-    canvas.addEventListener("mouseup", (e) => {
-      this.mouse.x = e.offsetX;
-      this.mouse.y = e.offsetY;
-      this.mouse.pressed = false;
-    });
-    canvas.addEventListener("mousemove", (e) => {
-      if (this.mouse.pressed) {
-        this.mouse.x = e.offsetX;
-        this.mouse.y = e.offsetY;
+    drawGrid = () => {
+      console.log("drawGrid");
+      ctx.clearRect(0, 0, this.gridWidth, this.gridHeight);
+      this.gridLines();
+
+      // Highlight the cell on mouse hover
+      canvas.addEventListener("mousemove", (e) => {
+        const rect = canvas.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+
+        const row = Math.floor(y / this.cellSize);
+        const col = Math.floor(x / this.cellSize);
+
+        // Clear previous highlight
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Draw grid
+        this.gridLines();
+
+        if (row < this.gridSize && col < this.gridSize) {
+          ctx.fillStyle = "rgba(0, 0, 255, 0.2)";
+          ctx.fillRect(
+            col * this.cellSize,
+            row * this.cellSize,
+            this.cellSize,
+            this.cellSize
+          );
+        }
+        this.player.draw();
+      });
+    };
+    render() {
+      this.player.draw();
+      this.drawGrid(ctx);
+    }
+  }
+
+  class Player {
+    constructor(game) {
+      this.game = game;
+      this.username = { username: "" };
+      this.ships = [];
+      this.parrot = true;
+      this.board = [
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      ];
+    }
+
+
+
+    createShips() {
+      let ship5 = new Ship(5, this);
+      this.ships.push(ship5);
+      // for i in range(2) in javascript
+      for (let i = 0; i < 2; i++) {
+        let ship = new Ship(4, this);
+        this.ships.push(ship);
       }
-    });
-    window.addEventListener("keydown", (e) => {
-      if (e.key == "d") this.debug = !this.debug;
-    });
-  }
-  render(context) {
-    this.obstacles.forEach((obstacle) => obstacle.draw(context));
-    this.player.draw(context);
-    this.player.update();
-  }
-}
-
-class Player {
-  constructor() {
-    this.username = '';
-    this.ships = [];
-    this.parrot = true;
-    this.board = [
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    ];
-  }
-
-
-
-  createShips() {
-    let ship5 = new Ship(5);
-    this.ships.push(ship5);
-    for (i in Range(2)) {
-      let ship = new Ship(4);
-      this.ships.push(ship);
+      for (let i = 0; i < 2; i++) {
+        let ship = new Ship(3, this);
+        this.ships.push(ship);
+      }
+      let ship2 = new Ship(2, this);
+      this.ships.push(ship2);
     }
-    for (i in Range(2)) {
-      let ship = new Ship(3);
-      this.ships.push(ship);
-    }
-    let ship2 = new Ship(2);
-    this.ships.push(ship2);
-  }
 
+    insertShips() {
+      for (location in this.ships.location) {
+        this.board[location[0]][location[1]] = 5;
+      }
+    }
+    draw() {
+      for (let ship of this.ships) {
+        ship.draw();
+      }
+    }
+  }
   insertShips() {
     for (location in this.ships.location) {
       this.board[location[0]][location[1]] = 5;
@@ -260,16 +165,110 @@ class Player {
   }
 }
 
+  class Ship {
+    constructor(type, player) {
+      this.player = player;
+      this.rotation = false;
+      this.location = [];
+      this.sunk = false;
+      this.type = type;
+      this.image = document.getElementById("ship");
+      this.spriteX = 0;
+      this.spriteY = 0;
+      this.spriteWidth = 840 / 4;
+      this.spriteHeight = 858 / 4;
+      this.x = 1000;
+      this.y = 100;
+      this.width = 100;
+      this.height = 100;
+      this.isDragging = false;
+      this.startX = 0;
+      this.startY = 0;
+      canvas.addEventListener("mousedown", this.startDragging.bind(this));
+      canvas.addEventListener("mousemove", this.drag.bind(this));
+    }
 
+    startDragging(event) {
+      const rect = canvas.getBoundingClientRect();
+      const mouseX = event.clientX - rect.left;
+      const mouseY = event.clientY - rect.top;
 
-class Ship {
-  constructor(type) {
-    this.rotation = false;
-    this.location = [];
-    this.sunk = false;
-    this.type = type;
+      if (
+        mouseX >= this.x &&
+        mouseX <= this.x + this.width &&
+        mouseY >= this.y &&
+        mouseY <= this.y + this.height
+      ) {
+        this.isDragging = true;
+        this.startX = mouseX - this.x;
+        this.startY = mouseY - this.y;
+      }
+    }
+
+    drag(event) {
+      if (this.isDragging) {
+        const rect = canvas.getBoundingClientRect();
+        const mouseX = event.clientX - rect.left;
+        const mouseY = event.clientY - rect.top;
+        this.x = mouseX - this.startX;
+        this.y = mouseY - this.startY;
+      }
+    }
+
+    stopDragging(event) {
+      // Snap the ship to the nearest grid square
+      const gridX = Math.floor(
+        (this.x + this.width / 2) / this.player.game.cellSize
+      );
+      const gridY = Math.floor(
+        (this.y + this.height / 2) / this.player.game.cellSize
+      );
+
+      // Calculate the snapped position within the grid
+      this.x = gridX * this.player.game.cellSize;
+      this.y = gridY * this.player.game.cellSize;
+      this.isDragging = false;
+    }
+
+    draw() {
+      ctx.drawImage(
+        this.image,
+        this.spriteX,
+        this.spriteY,
+        this.spriteWidth,
+        this.spriteHeight,
+        this.x,
+        this.y,
+        this.width,
+        this.height
+      );
+
+      // let mouse_up = (e) => {
+      //   console.log("mouse up");
+      //   e.preventDefault();
+      //   // Snap the ship to the nearest grid square
+      //   const gridX = Math.floor(
+      //     (this.x + this.width / 2) / this.player.game.cellSize
+      //   );
+      //   const gridY = Math.floor(
+      //     (this.y + this.height / 2) / this.player.game.cellSize
+      //   );
+
+      //   // Calculate the snapped position within the grid
+      //   this.x = gridX * this.player.game.cellSize;
+      //   this.y = gridY * this.player.game.cellSize;
+      // };
+      // canvas.onmouseup = mouse_up;
+    }
   }
-}
+  function init() {
+    const game = new Game(canvas);
+    game.player.createShips();
+    game.render(ctx);
+  }
+
+  init();
+});
 
 Vue.createApp({
   data() {
