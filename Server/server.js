@@ -40,19 +40,22 @@ wss.on("connection", function (ws) {
 
   // Handle message through websocket
   ws.on("message", function incoming(message) {
-    if (message.toString().startsWith("<username>")) {
-      var username = message.toString().replace("<username>", "");
+    msg = JSON.parse(message);
+    if (msg.EventType == "username") {
+      var username = msg.Data.user;
       const clientId = clients.get(ws);
       // client.set(clientid, ws);
       console.log(username);
       addPlayer(username, clientId);
     }
-    msg = JSON.parse(message);
     if (msg.EventType == "attack") {
       attackFunction(msg.Data);
     }
     if (msg.EventType == "parrot") {
       parrotFunction(msg.Data);
+    }
+    if (msg.EventType == "UpdateBoard") {
+      updateBoard(msg.Data);
     }
   });
   ws.on("close", function () {
@@ -219,6 +222,12 @@ function sendData(type, indexvar) {
       Data: prepareSend(playingGames[indexvar], "player2"),
     })
   );
+}
+function checkWin(game) {
+  return;
+}
+function updateBoard(data) {
+  return;
 }
 function parrotFunction(data) {
   return;

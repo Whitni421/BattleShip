@@ -138,7 +138,6 @@ window.addEventListener("DOMContentload", function () {
       }
     }
 
-
     insertParrot(coordinates) {
       if (this.parrot == true) {
         hover = [
@@ -156,7 +155,7 @@ window.addEventListener("DOMContentload", function () {
           i.classList.add(".revealed");
         }
       } else {
-        pass
+        pass;
       }
     }
   }
@@ -318,9 +317,13 @@ Vue.createApp({
     load_screen: function () {
       // Send username through websocket
       this.page = "page2";
-      this.socket.send("<username>" + this.username);
-    }
-      
+      this.socket.send(
+        JSON.stringify({
+          EventType: "username",
+          Data: { user: this.username },
+        })
+      );
+    },
   },
   created: function () {
     this.connect();
