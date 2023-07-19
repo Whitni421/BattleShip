@@ -4,4 +4,56 @@
   box-sizing: border-box;
 }
 
+#ship {
+  display: none;
+}
 
+/* canvas.addEventListener("mousedown", this.startDragging.bind(this));
+      canvas.addEventListener("mousemove", this.drag.bind(this));
+      canvas.addEventListener("mouseup", this.stopDragging.bind(this));
+    }
+
+    startDragging(event) {
+      const rect = canvas.getBoundingClientRect();
+      const mouseX = event.clientX - rect.left;
+      const mouseY = event.clientY - rect.top;
+
+      if (
+        mouseX >= this.x &&
+        mouseX <= this.x + this.width &&
+        mouseY >= this.y &&
+        mouseY <= this.y + this.height
+      ) {
+        this.isDragging = true;
+        this.startX = mouseX - this.x;
+        this.startY = mouseY - this.y;
+      }
+    }
+
+    drag(event) {
+      if (this.isDragging) {
+        const rect = canvas.getBoundingClientRect();
+        const mouseX = event.clientX - rect.left;
+        const mouseY = event.clientY - rect.top;
+        this.x = mouseX - this.startX;
+        this.y = mouseY - this.startY;
+      }
+    }
+
+    stopDragging(event) {
+      if (this.isDragging) {
+        this.isDragging = false;
+
+        // Snap the ship to the nearest grid square
+        const gridX = Math.round(
+          (this.x + this.width / 2) / this.player.game.cellSize
+        );
+        const gridY = Math.round(
+          (this.y + this.height / 2) / this.player.game.cellSize
+        );
+
+        // Calculate the snapped position within the grid
+        this.x = gridX * this.player.game.cellSize;
+        this.y = gridY * this.player.game.cellSize;
+      }
+    } */
