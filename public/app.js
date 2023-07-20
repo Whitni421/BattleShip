@@ -353,7 +353,6 @@ Vue.createApp({
       page: 1,
       username: "",
       player_turn: 0,
-      player_turn: 0,
     };
   },
   methods: {
@@ -383,7 +382,6 @@ Vue.createApp({
         }
       };
     },
-
     checkSunk: function () {
       var count = 0;
       for (i in Game.player.ships) {
@@ -406,13 +404,6 @@ Vue.createApp({
     },
     load_screen: function () {
       // Send username through websocket
-      this.page = 2;
-      this.socket.send(
-        JSON.stringify({
-          EventType: "username",
-          Data: { user: this.username },
-        })
-      );
       this.page = 2;
       this.socket.send(
         JSON.stringify({
