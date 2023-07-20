@@ -10,17 +10,19 @@
   </head>
   <body>
     <div id="app">
-      <div>{{page}}</div>
       <div id="page1" v-if="page==1">
-        <h3>Enter Username</h3>
-        <input
-          id="username_bar"
-          type="text"
-          placeholder="Username..."
-          v-model="username"
-        />
-        <button @click="load_screen()">Play</button>
-        <img id="ship" src="../images/ships.png" />
+        <div id="logo"></div>
+        <div id="login">
+          
+          <h2>Enter Username</h2>
+          <input
+            id="username_bar"
+            type="text"
+            placeholder="Username..."
+            v-model="username"
+          />
+          <button @click="load_screen()">Play</button>
+        </div>
       </div>
       <div id="page2" v-else-if="page==2">
         <h3 class="loading">loading</h3>
