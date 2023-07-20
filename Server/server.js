@@ -125,6 +125,7 @@ function prepareSend(object, player) {
         board: replaceFiveWithZero(object.player2.board),
       },
       index: object.index,
+      player: "player2",
     };
   } else if (player === "player2") {
     return {
@@ -137,6 +138,7 @@ function prepareSend(object, player) {
         board: object.player2.board,
       },
       index: object.index,
+      player: "player2",
     };
   }
 }
@@ -182,6 +184,7 @@ class game {
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
