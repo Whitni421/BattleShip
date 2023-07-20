@@ -13,7 +13,6 @@
       <div id="page1" v-if="page==1">
         <div id="logo"></div>
         <div id="login">
-          
           <h2>Enter Username</h2>
           <input
             id="username_bar"
@@ -28,13 +27,14 @@
         <h3 class="loading">loading</h3>
       </div>
       <div id="page3" v-else-if="page==3">
-        <div>display this</div>
-        <h3>Place your Ships</h3>
-        <canvas id="canvas"></canvas>
-        <button @click="insertShips()">Enter</button>
+        <div id="gameContent">
+          <h3>Place your Ships</h3>
+          <canvas id="canvas"></canvas>
+          <button @click="insertShips()">Enter</button>
+        </div>
       </div>
       <div id="page4" v-if="page=='4'">
-        <div>Other player has disconnected </div>
+        <div>Other player has disconnected</div>
       </div>
       <!-- <div id="page4 page" v-if="page == 'page4'">
         <div id="player1-board">
