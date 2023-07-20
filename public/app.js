@@ -54,7 +54,6 @@ window.addEventListener("DOMContentload", function () {
     };
 
     drawGrid = () => {
-      console.log("drawGrid");
       ctx.clearRect(0, 0, this.gridWidth, this.gridHeight);
       this.gridLines();
 
@@ -87,7 +86,7 @@ window.addEventListener("DOMContentload", function () {
     };
     render() {
       this.player.draw();
-      this.drawGrid(ctx);
+      this.drawGrid();
     }
   }
 
@@ -96,7 +95,8 @@ window.addEventListener("DOMContentload", function () {
       this.game = game;
       this.username = { username: "" };
       this.ships = [];
-      this.parrot = true;
+      this.parrot = true; //parrot sprite width and height 90, 65
+      //kraken sprite width and height 95, 75
       this.board = [
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -111,19 +111,92 @@ window.addEventListener("DOMContentload", function () {
       ];
     }
 
+    attack(coordinates) {}
+
     createShips() {
-      let ship5 = new Ship(5, this);
+      //spriteX spriteY spriteWidth spriteHeight x y width height
+      let ship5 = new Ship(
+        5,
+        this,
+        100,
+        70,
+        80,
+        300,
+        this.game.width - 190,
+        0,
+        90,
+        500
+      );
       this.ships.push(ship5);
-      // for i in range(2) in javascript
-      for (let i = 0; i < 2; i++) {
-        let ship = new Ship(4, this);
-        this.ships.push(ship);
-      }
-      for (let i = 0; i < 2; i++) {
-        let ship = new Ship(3, this);
-        this.ships.push(ship);
-      }
-      let ship2 = new Ship(2, this);
+
+      let ship4 = new Ship(
+        4,
+        this,
+        250,
+        70,
+        100,
+        160,
+        this.game.width - 90,
+        0,
+        100,
+        180
+      );
+      this.ships.push(ship4);
+
+      let ship4_2 = new Ship(
+        4,
+        this,
+        250,
+        70,
+        100,
+        160,
+        this.game.width - 90,
+        180,
+        100,
+        180
+      );
+      this.ships.push(ship4_2);
+
+      let ship3 = new Ship(
+        3,
+        this,
+        40,
+        40,
+        60,
+        150,
+        this.game.width - 190,
+        240,
+        100,
+        150
+      );
+      this.ships.push(ship3);
+
+      let ship3_2 = new Ship(
+        3,
+        this,
+        40,
+        40,
+        60,
+        150,
+        this.game.width - 90,
+        360,
+        100,
+        150
+      );
+      this.ships.push(ship3_2);
+
+      let ship2 = new Ship(
+        2,
+        this,
+        190,
+        70,
+        60,
+        80,
+        this.game.width - 150,
+        390,
+        90,
+        100
+      );
       this.ships.push(ship2);
     }
 
@@ -132,6 +205,7 @@ window.addEventListener("DOMContentload", function () {
         this.board[location[0]][location[1]] = 5;
       }
     }
+
     draw() {
       for (let ship of this.ships) {
         ship.draw();
@@ -154,78 +228,103 @@ window.addEventListener("DOMContentload", function () {
           if (i == 0) i = 1;
           i.classList.add(".revealed");
         }
-      } else {
-        pass;
       }
     }
   }
 
   class Ship {
-    constructor(type, player) {
+    constructor(
+      type,
+      player,
+      spriteX,
+      spriteY,
+      spriteWidth,
+      spriteHeight,
+      x,
+      y,
+      width,
+      height
+    ) {
+      //spriteX spriteY spriteWidth spriteHeight x y width height
       this.player = player;
       this.rotation = false;
       this.location = [];
       this.sunk = false;
       this.type = type;
       this.image = document.getElementById("ship");
-      this.spriteX = 0;
-      this.spriteY = 0;
-      this.spriteWidth = 840 / 4;
-      this.spriteHeight = 858 / 4;
-      this.x = 1000;
-      this.y = 100;
-      this.width = 100;
-      this.height = 100;
+      this.spriteX = spriteX;
+      this.spriteY = spriteY;
+      this.spriteWidth = spriteWidth;
+      this.spriteHeight = spriteHeight;
+      this.x = x;
+      this.y = y;
+      this.width = width;
+      this.height = height;
       this.isDragging = false;
       this.startX = 0;
       this.startY = 0;
-      canvas.addEventListener("mousedown", this.startDragging.bind(this));
-      canvas.addEventListener("mousemove", this.drag.bind(this));
+      canvas.addEventListener("mousedown", this.handleMouseDown.bind(this));
+      canvas.addEventListener("mouseup", this.handleMouseUp.bind(this));
+      canvas.addEventListener("mousemove", this.handleMouseMove.bind(this));
     }
 
-    startDragging(event) {
+    // Handle drag and drop for ships
+    handleMouseDown(e) {
       const rect = canvas.getBoundingClientRect();
-      const mouseX = event.clientX - rect.left;
-      const mouseY = event.clientY - rect.top;
-
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
       if (
-        mouseX >= this.x &&
-        mouseX <= this.x + this.width &&
-        mouseY >= this.y &&
-        mouseY <= this.y + this.height
+        x >= this.x &&
+        x < this.x + this.width &&
+        y >= this.y &&
+        y < this.y + this.height
       ) {
         this.isDragging = true;
-        this.startX = mouseX - this.x;
-        this.startY = mouseY - this.y;
+        this.startX = x - this.x;
+        this.startY = y - this.y;
+        return;
       }
     }
 
-    drag(event) {
+    handleMouseMove(e) {
+      const rect = canvas.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+
       if (this.isDragging) {
-        const rect = canvas.getBoundingClientRect();
-        const mouseX = event.clientX - rect.left;
-        const mouseY = event.clientY - rect.top;
-        this.x = mouseX - this.startX;
-        this.y = mouseY - this.startY;
+        this.x = x - this.startX;
+        this.y = y - this.startY;
+        // this.player.game.drawGrid();
+        this.draw();
+        return;
       }
     }
 
-    stopDragging(event) {
-      // Snap the ship to the nearest grid square
-      const gridX = Math.floor(
-        (this.x + this.width / 2) / this.player.game.cellSize
-      );
-      const gridY = Math.floor(
-        (this.y + this.height / 2) / this.player.game.cellSize
-      );
+    handleMouseUp(e) {
+      if (this.isDragging) {
+        this.isDragging = false;
+        const rect = canvas.getBoundingClientRect();
+        const mouseX = e.clientX - rect.left;
+        const mouseY = e.clientY - rect.top;
+        const gridX = Math.floor(mouseX / this.player.game.cellSize);
+        const gridY = Math.floor(mouseY / this.player.game.cellSize);
 
-      // Calculate the snapped position within the grid
-      this.x = gridX * this.player.game.cellSize;
-      this.y = gridY * this.player.game.cellSize;
-      this.isDragging = false;
+        // Calculate the snapped position within the grid
+        this.x = gridX * this.player.game.cellSize;
+        this.y = gridY * this.player.game.cellSize;
+
+        // Update the board with the new location
+        // this.insertShips();
+
+        this.player.game.drawGrid();
+        this.changed = true;
+        this.draw();
+        return;
+      }
     }
 
     draw() {
+      //spriteX spriteY spriteWidth spriteHeight x y width height
       ctx.drawImage(
         this.image,
         this.spriteX,
@@ -237,23 +336,6 @@ window.addEventListener("DOMContentload", function () {
         this.width,
         this.height
       );
-
-      // let mouse_up = (e) => {
-      //   console.log("mouse up");
-      //   e.preventDefault();
-      //   // Snap the ship to the nearest grid square
-      //   const gridX = Math.floor(
-      //     (this.x + this.width / 2) / this.player.game.cellSize
-      //   );
-      //   const gridY = Math.floor(
-      //     (this.y + this.height / 2) / this.player.game.cellSize
-      //   );
-
-      //   // Calculate the snapped position within the grid
-      //   this.x = gridX * this.player.game.cellSize;
-      //   this.y = gridY * this.player.game.cellSize;
-      // };
-      // canvas.onmouseup = mouse_up;
     }
   }
   function init() {
@@ -270,6 +352,7 @@ Vue.createApp({
     return {
       page: 1,
       username: "",
+      player_turn: 0,
       player_turn: 0,
     };
   },
@@ -300,6 +383,7 @@ Vue.createApp({
         }
       };
     },
+
     checkSunk: function () {
       var count = 0;
       for (i in Game.player.ships) {
@@ -322,6 +406,13 @@ Vue.createApp({
     },
     load_screen: function () {
       // Send username through websocket
+      this.page = 2;
+      this.socket.send(
+        JSON.stringify({
+          EventType: "username",
+          Data: { user: this.username },
+        })
+      );
       this.page = 2;
       this.socket.send(
         JSON.stringify({
