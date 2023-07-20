@@ -121,11 +121,11 @@ window.addEventListener("load", function () {
         100,
         70,
         80,
-        200,
+        300,
         this.game.width - 190,
         0,
-        100,
-        240
+        90,
+        500
       );
       this.ships.push(ship5);
 
@@ -194,7 +194,7 @@ window.addEventListener("load", function () {
         80,
         this.game.width - 150,
         390,
-        60,
+        90,
         100
       );
       this.ships.push(ship2);
@@ -302,7 +302,7 @@ window.addEventListener("load", function () {
       if (this.isDragging) {
         this.x = x - this.startX;
         this.y = y - this.startY;
-        this.player.game.drawGrid();
+        // this.player.game.drawGrid();
         this.draw();
         return;
       }
@@ -311,14 +311,11 @@ window.addEventListener("load", function () {
     handleMouseUp(e) {
       if (this.isDragging) {
         this.isDragging = false;
-
-        // Snap the ship to the nearest grid square
-        const gridX = Math.floor(
-          (this.x + this.width / 2) / this.player.game.cellSize
-        );
-        const gridY = Math.floor(
-          (this.y + this.height / 2) / this.player.game.cellSize
-        );
+        const rect = canvas.getBoundingClientRect();
+        const mouseX = e.clientX - rect.left;
+        const mouseY = e.clientY - rect.top;
+        const gridX = Math.floor(mouseX / this.player.game.cellSize);
+        const gridY = Math.floor(mouseY / this.player.game.cellSize);
 
         // Calculate the snapped position within the grid
         this.x = gridX * this.player.game.cellSize;
@@ -335,7 +332,6 @@ window.addEventListener("load", function () {
     }
 
     draw() {
-      console.log("drawing");
       //spriteX spriteY spriteWidth spriteHeight x y width height
       ctx.drawImage(
         this.image,
