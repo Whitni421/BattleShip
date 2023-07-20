@@ -69,6 +69,7 @@ wss.on("connection", function (ws) {
         );
         openGames.splice(gameIndex, 1);
       }
+      
     }
     // Remove the client from the clients map
     clients.delete(ws);

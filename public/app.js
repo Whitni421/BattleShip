@@ -292,6 +292,12 @@ Vue.createApp({
           this.page = 3;
           console.log(this.page);
         }
+        if (msg.EventType == "playerDisconnect") {
+          console.log("Player disconnected");
+          console.log(msg.Data);
+          this.page = 4;
+          console.log(this.page);
+        }
       };
     },
     checkSunk: function () {

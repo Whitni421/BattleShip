@@ -31,10 +31,13 @@
         <canvas id="canvas"></canvas>
         <button @click="insertShips()">Enter</button>
       </div>
+      <div id="page4" v-if="page=='4'">
+        <div>Other player has disconnected </div>
+      </div>
       <!-- <div id="page4 page" v-if="page == 'page4'">
         <div id="player1-board">
       </div> -->
-      <div id="win page" v-if="page=='winpage'">Player ___ Won!</div>
+      <div id="page5" v-if="page=='5'">Player ___ Won!</div>
     </div>
   </body>
   <script src="app.js"></script>
