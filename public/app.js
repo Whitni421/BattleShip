@@ -200,15 +200,34 @@ window.addEventListener("DOMContentload", function () {
       this.ships.push(ship2);
     }
 
-    insertShips() {
-      for (location in this.ships.location) {
-        this.board[location[0]][location[1]] = 5;
-      }
-    }
-
     draw() {
       for (let ship of this.ships) {
         ship.draw();
+      }
+    }
+
+    insertShips() {
+      for (let ship of this.ships) {
+        const gridSize = this.game.gridSize;
+
+        // Calculate the starting grid coordinates based on the ship's position
+        const startGridX = Math.floor(ship.x / this.game.cellSize);
+        const startGridY = Math.floor(ship.y / this.game.cellSize);
+
+        // Depending on the ship's orientation, set the corresponding cells on the board to the ship's type (e.g., 5 for ship5, 4 for ship4, etc.)
+        if (ship.rotation) {
+          for (let i = 0; i < ship.type; i++) {
+            if (startGridX + i < gridSize) {
+              this.board[startGridY][startGridX + i] = 5;
+            }
+          }
+        } else {
+          for (let i = 0; i < ship.type; i++) {
+            if (startGridY + i < gridSize) {
+              this.board[startGridY + i][startGridX] = 5;
+            }
+          }
+        }
       }
     }
 
