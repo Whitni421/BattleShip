@@ -378,6 +378,7 @@ Vue.createApp({
           console.log("Player disconnected");
           console.log(msg.Data);
           this.page = 4;
+
           console.log(this.page);
         }
       };

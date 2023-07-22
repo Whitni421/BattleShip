@@ -5,14 +5,16 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link href="style.css" rel="stylesheet" type="text/css" />
+    <link rel="shortcut icon" href="#">
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <title>Document</title>
   </head>
   <body>
     <div id="app">
       <div id="page1" v-if="page==1">
-        <div id="logo"></div>
+        <div class="logo"></div>
         <div id="login">
+          
           <h2>Enter Username</h2>
           <input
             id="username_bar"
@@ -24,17 +26,24 @@
         </div>
       </div>
       <div id="page2" v-else-if="page==2">
-        <h3 class="loading">loading</h3>
+        <div class="logo"></div>
+        <div id="loadscreen">
+          <h3 id="loading">loading</h3>
+          <div id="loadingwheel">
+          </div>
+        
+        </div>
+        
+        
       </div>
       <div id="page3" v-else-if="page==3">
-        <div id="gameContent">
-          <h3>Place your Ships</h3>
-          <canvas id="canvas"></canvas>
-          <button @click="insertShips()">Enter</button>
-        </div>
+        <div>display this</div>
+        <h3>Place your Ships</h3>
+        <canvas id="canvas"></canvas>
+        <button @click="insertShips()">Enter</button>
       </div>
       <div id="page4" v-if="page=='4'">
-        <div>Other player has disconnected</div>
+        <div>Other player has disconnected </div>
       </div>
       <!-- <div id="page4 page" v-if="page == 'page4'">
         <div id="player1-board">
