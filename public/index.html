@@ -15,11 +15,11 @@
         <div class="logo"></div>
         <div id="login">
           
-          <h2>Enter Username</h2>
+          <h2>Choose <span v-if="userRequired">Valid</span><br>Display Name</h2>
           <input
             id="username_bar"
             type="text"
-            placeholder="Username..."
+            placeholder="Display Name..."
             v-model="username"
           />
           <button @click="load_screen()">Play</button>
@@ -28,7 +28,11 @@
       <div id="page2" v-else-if="page==2">
         <div class="logo"></div>
         <div id="loadscreen">
-          <h3 id="loading">loading</h3>
+          <div id="loading">
+            <h3>
+              Waiting For Player
+            </h3>
+          </div>
           <div id="loadingwheel">
           </div>
         

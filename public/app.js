@@ -353,6 +353,7 @@ Vue.createApp({
       page: 1,
       username: "",
       player_turn: 0,
+      userRequired: false,
     };
   },
   methods: {
@@ -405,13 +406,18 @@ Vue.createApp({
     },
     load_screen: function () {
       // Send username through websocket
-      this.page = 2;
-      this.socket.send(
-        JSON.stringify({
-          EventType: "username",
-          Data: { user: this.username },
-        })
-      );
+      if (this.username.trim() != "") {
+        this.page = 2;
+        this.userRequired = false;
+        this.socket.send(
+          JSON.stringify({
+            EventType: "username",
+            Data: { user: this.username },
+          })
+        );
+      } else {
+        this.userRequired = true;
+      }
     },
   },
   created: function () {
