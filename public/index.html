@@ -6,11 +6,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link href="style.css" rel="stylesheet" type="text/css" />
     <link rel="shortcut icon" href="#">
+    <script src="https://kit.fontawesome.com/aeb49ce674.js" crossorigin="anonymous"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <title>Document</title>
   </head>
   <body>
     <div id="app">
+      <div id="toggleAudio" @click="toggleAudio()">
+        <span>
+          <i class="fa-solid fa-volume-off fa-2xl fa-rotate-180" v-if="!isAudioPlaying"></i>
+        </span>
+        <span>
+          <i class="fa-solid fa-volume-low fa-2xl fa-rotate-180" v-if="isAudioPlaying"></i>
+        </span>
+      </h3>
+      </div>
+      <audio v-if="musicToggle" id="backgroundAudio" loop autoplay >
+        <source src="sound/background.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+      </audio>
       <div id="page1" v-if="page==1">
         <div class="logo"></div>
         <div id="login">

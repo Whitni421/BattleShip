@@ -354,7 +354,14 @@ Vue.createApp({
       username: "",
       player_turn: 0,
       userRequired: false,
+      backgroundAudio: new Audio("/sound/background.mp3"), // Replace with the path to your audio file
+      isAudioPlaying: false,
+      audioVolume: 0.01,
     };
+  },
+  mounted() {
+    this.backgroundAudio.loop = true;
+    this.backgroundAudio.volume = this.audioVolume; // Start playing the audio when the Vue instance is mounted
   },
   methods: {
     connect: function () {
@@ -418,6 +425,23 @@ Vue.createApp({
       } else {
         this.userRequired = true;
       }
+    },
+    toggleAudio() {
+      this.isAudioPlaying = !this.isAudioPlaying;
+      if (this.isAudioPlaying) {
+        this.playAudio();
+      } else {
+        this.pauseAudio();
+      }
+    },
+    playAudio() {
+      this.backgroundAudio.play();
+    },
+    pauseAudio() {
+      this.backgroundAudio.pause();
+    },
+    setAudioVolume() {
+      this.backgroundAudio.volume = this.audioVolume;
     },
   },
   created: function () {

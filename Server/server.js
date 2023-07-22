@@ -69,29 +69,30 @@ wss.on("connection", function (ws) {
         );
         openGames.splice(gameIndex, 1);
       }
-            // Find the game where the disconnected player was playing
-            const game = playingGames.find(
-              (game) => game.player1.id === clientId || game.player2.id === clientId
-            );
-      
-            if (game) {
-              const otherPlayer = game.player1.id === clientId ? game.player2.id : game.player1.id;
-      
-              // Notify the other player about the disconnection
-              otherPlayer.send(
-                JSON.stringify({
-                  EventType: "playerDisconnect",
-                  Data: { message: "Your opponent has disconnected from the game." },
-                })
-              );
-      
-              // Remove the game object from the playingGames array
-              const gameIndex = playingGames.indexOf(game);
-              if (gameIndex !== -1) {
-                playingGames.splice(gameIndex, 1);
-                console.log("Game removed from playingGames array.");
-              }
-            }
+      // Find the game where the disconnected player was playing
+      const game = playingGames.find(
+        (game) => game.player1.id === clientId || game.player2.id === clientId
+      );
+
+      if (game) {
+        const otherPlayer =
+          game.player1.id === clientId ? game.player2.id : game.player1.id;
+
+        // Notify the other player about the disconnection
+        otherPlayer.send(
+          JSON.stringify({
+            EventType: "playerDisconnect",
+            Data: { message: "Your opponent has disconnected from the game." },
+          })
+        );
+
+        // Remove the game object from the playingGames array
+        const gameIndex = playingGames.indexOf(game);
+        if (gameIndex !== -1) {
+          playingGames.splice(gameIndex, 1);
+          console.log("Game removed from playingGames array.");
+        }
+      }
     }
     // Remove the client from the clients map
     clients.delete(ws);

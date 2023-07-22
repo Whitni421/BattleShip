@@ -176,4 +176,23 @@
   animation: spin 2s linear infinite;
 }
 
+#toggleAudio{
+  width:70px;
+  height:70px;
+  position:fixed;
+  z-index:4;
+  bottom:10px;
+  right:10px;
+  border: rgb(254,195,4) 5px solid;
+  background-color:rgb(253,149,1);
+  border-radius: 50%;
+  display:Flex;
+  justify-content:center;
+  align-items:center;
+
+}
+#toggleAudio{
+  color:black;
+  
+}
 
