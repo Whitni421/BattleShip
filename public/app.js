@@ -333,11 +333,12 @@ window.addEventListener("DOMContentload", function () {
         this.y = gridY * this.player.game.cellSize;
 
         // Update the board with the new location
-        // this.insertShips();
+        this.insertShips();
 
         this.player.game.drawGrid();
         this.changed = true;
         this.draw();
+        console.log(this.player.board);
         return;
       }
     }
@@ -369,7 +370,7 @@ window.addEventListener("DOMContentload", function () {
 Vue.createApp({
   data() {
     return {
-      page: 1,
+      page: 3,
       username: "",
       player_turn: 0,
       player_turn: 0,
