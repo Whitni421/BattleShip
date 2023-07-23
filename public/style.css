@@ -110,7 +110,7 @@
   align-items: center;
   flex-flow: column nowrap;
 }
-#page3 button {
+#page3 #PlaceShipsButton {
   border: black 5px solid;
   border-radius: 4px;
 }
@@ -195,4 +195,45 @@
   color:black;
   
 }
+#liveChat{
+  display:flex;
+  flex-flow:row wrap;
+  width:200px;
+  justify-content:space-between;
+  gap:5px;
+  position:fixed;
+  right:0px;
 
+}
+#liveChat #ChatLog{
+  width:inherit;
+  height:350px;
+  overflow-x:hidden;
+  overflow-y:scroll;
+  background-color:white;
+  border: black 2px solid;
+  padding:10px;
+}
+#ChatLog h3{
+  width:95%;
+  overflow-wrap:break-word;
+  height:auto;
+}
+#liveChat input{
+  width:70%;
+  border-radius: 10px;
+  height: 30px;
+  border: black 2px solid;
+  text-align: center;
+  font-size: 1rem;
+  
+}
+#liveChat #chatButton{
+  width:20%;
+  border-radius: 10px;
+  height: 30px;
+  border: black 2px solid;
+  text-align: center;
+  font-size: 1rem;
+  cursor: pointer;
+}

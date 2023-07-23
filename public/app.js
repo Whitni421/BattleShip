@@ -357,6 +357,10 @@ Vue.createApp({
       backgroundAudio: new Audio("/sound/background.mp3"), // Replace with the path to your audio file
       isAudioPlaying: false,
       audioVolume: 0.01,
+      UserChat: [],
+      UserInput: "",
+      player: "",
+      GameIndex: -1,
     };
   },
   mounted() {
@@ -381,6 +385,9 @@ Vue.createApp({
           console.log(msg.Data);
           this.page = 3;
           console.log(this.page);
+          this.player = msg.Data.player;
+          this.GameIndex = msg.Data.index;
+          console.log(this.player);
         }
         if (msg.EventType == "playerDisconnect") {
           console.log("Player disconnected");
@@ -388,6 +395,10 @@ Vue.createApp({
           this.page = 4;
 
           console.log(this.page);
+        }
+        if (msg.EventType == "SendMessage") {
+          console.log(msg);
+          this.UserChat.push(msg.Data.Username + ": " + msg.Data.Message);
         }
       };
     },
@@ -442,6 +453,22 @@ Vue.createApp({
     },
     setAudioVolume() {
       this.backgroundAudio.volume = this.audioVolume;
+    },
+    sendChat() {
+      this.socket.send(
+        JSON.stringify({
+          EventType: "SendMessage",
+          Data: {
+            Message: this.UserInput,
+            Index: this.GameIndex,
+            Player: this.player,
+            Username: this.username,
+          },
+        })
+      );
+
+      this.UserChat.push(this.username + ": " + this.UserInput);
+      this.UserInput = "";
     },
   },
   created: function () {

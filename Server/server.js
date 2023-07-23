@@ -46,7 +46,6 @@ wss.on("connection", function (ws) {
       var username = msg.Data.user;
       const clientId = clients.get(ws);
       // client.set(clientid, ws);
-      console.log(username);
       addPlayer(username, clientId);
     }
     if (msg.EventType == "attack") {
@@ -57,6 +56,10 @@ wss.on("connection", function (ws) {
     }
     if (msg.EventType == "UpdateBoard") {
       updateBoard(msg.Data);
+    }
+    if (msg.EventType == "SendMessage") {
+      console.log(msg);
+      sendMessage(msg.Data);
     }
   });
   ws.on("close", function () {
@@ -121,7 +124,6 @@ function addPlayer(player, id) {
     openGames.shift();
     openGames.shift();
     console.log(indexvar);
-    console.log(playingGames[indexvar]);
     playingGames[indexvar].player1.id.send(
       JSON.stringify({
         EventType: "initialize",
@@ -149,7 +151,7 @@ function prepareSend(object, player) {
         board: replaceFiveWithZero(object.player2.board),
       },
       index: object.index,
-      player: "player2",
+      player: "player1",
     };
   } else if (player === "player2") {
     return {
@@ -208,7 +210,6 @@ class game {
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -281,6 +282,32 @@ function updateBoard(data) {
     sendData("updateBoards", index);
   }
 }
+
+function sendMessage(data) {
+  var game = playingGames[data.Index];
+  if (data.Player == "player1") {
+    game.player2.id.send(
+      JSON.stringify({
+        EventType: "SendMessage",
+        Data: {
+          Message: data.Message,
+          Username: data.Username,
+        },
+      })
+    );
+  } else if (data.Player == "player2") {
+    game.player1.id.send(
+      JSON.stringify({
+        EventType: "SendMessage",
+        Data: {
+          Message: data.Message,
+          Username: data.Username,
+        },
+      })
+    );
+  }
+}
+
 function parrotFunction(data) {
   return;
 }

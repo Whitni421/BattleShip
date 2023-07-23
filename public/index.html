@@ -58,7 +58,15 @@
         <div>display this</div>
         <h3>Place your Ships</h3>
         <canvas id="canvas"></canvas>
-        <button @click="insertShips()">Enter</button>
+        <button @click="insertShips()" id="PlaceShipsButton">Enter</button>
+        <div id="liveChat">
+          <div id="ChatLog" >
+            <h3 v-for="chat in UserChat">{{chat}}</h3>
+          </div>
+          <input type="Text" placeholder="Enter Text" required v-model="UserInput"  @keyup.enter="sendChat()">
+          <button id="chatButton" @click="sendChat()">Enter</button>
+
+        </div>
       </div>
       <div id="page4" v-if="page=='4'">
         <div>Other player has disconnected </div>
