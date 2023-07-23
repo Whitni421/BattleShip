@@ -35,6 +35,7 @@
             type="text"
             placeholder="Display Name..."
             v-model="username"
+            @keyup.enter="load_screen()"
           />
           <button @click="load_screen()">Play</button>
         </div>

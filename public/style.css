@@ -188,6 +188,7 @@
   border-radius: 50%;
   display:Flex;
   justify-content:center;
+  cursor:pointer;
   align-items:center;
 
 }

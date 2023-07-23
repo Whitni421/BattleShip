@@ -356,6 +356,7 @@ Vue.createApp({
       userRequired: false,
       backgroundAudio: new Audio("/sound/background.mp3"), // Replace with the path to your audio file
       isAudioPlaying: false,
+      musicToggle: false,
       audioVolume: 0.01,
       UserChat: [],
       UserInput: "",
@@ -364,8 +365,7 @@ Vue.createApp({
     };
   },
   mounted() {
-    this.backgroundAudio.loop = true;
-    this.backgroundAudio.volume = this.audioVolume; // Start playing the audio when the Vue instance is mounted
+    // Start playing the audio when the Vue instance is mounted
   },
   methods: {
     connect: function () {
@@ -425,6 +425,9 @@ Vue.createApp({
     load_screen: function () {
       // Send username through websocket
       if (this.username.trim() != "") {
+        if (!this.isAudioPlaying) {
+          this.toggleAudio();
+        }
         this.page = 2;
         this.userRequired = false;
         this.socket.send(
@@ -438,6 +441,8 @@ Vue.createApp({
       }
     },
     toggleAudio() {
+      this.backgroundAudio.loop = true;
+      this.backgroundAudio.volume = this.audioVolume;
       this.isAudioPlaying = !this.isAudioPlaying;
       if (this.isAudioPlaying) {
         this.playAudio();
