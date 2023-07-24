@@ -399,6 +399,8 @@ Vue.createApp({
         if (msg.EventType == "SendMessage") {
           console.log(msg);
           this.UserChat.push(msg.Data.Username + ": " + msg.Data.Message);
+          const chatLogContainer = this.$refs.chatLogContainer;
+          chatLogContainer.scrollTop = chatLogContainer.scrollHeight;
         }
       };
     },
@@ -460,20 +462,24 @@ Vue.createApp({
       this.backgroundAudio.volume = this.audioVolume;
     },
     sendChat() {
-      this.socket.send(
-        JSON.stringify({
-          EventType: "SendMessage",
-          Data: {
-            Message: this.UserInput,
-            Index: this.GameIndex,
-            Player: this.player,
-            Username: this.username,
-          },
-        })
-      );
+      if (this.UserInput) {
+        this.socket.send(
+          JSON.stringify({
+            EventType: "SendMessage",
+            Data: {
+              Message: this.UserInput,
+              Index: this.GameIndex,
+              Player: this.player,
+              Username: this.username,
+            },
+          })
+        );
 
-      this.UserChat.push(this.username + ": " + this.UserInput);
-      this.UserInput = "";
+        this.UserChat.push(this.username + ": " + this.UserInput);
+        this.UserInput = "";
+        const chatLogContainer = this.$refs.chatLogContainer;
+        chatLogContainer.scrollTop = chatLogContainer.scrollHeight;
+      }
     },
   },
   created: function () {

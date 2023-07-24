@@ -61,16 +61,19 @@
         <canvas id="canvas"></canvas>
         <button @click="insertShips()" id="PlaceShipsButton">Enter</button>
         <div id="liveChat">
-          <div id="ChatLog" >
+          <div id="ChatLog" ref="chatLogContainer">
             <h3 v-for="chat in UserChat">{{chat}}</h3>
           </div>
-          <input type="Text" placeholder="Enter Text" required v-model="UserInput"  @keyup.enter="sendChat()">
+          <input type="Text" placeholder="Enter Text" v-model="UserInput"  @keyup.enter="sendChat()" required>
           <button id="chatButton" @click="sendChat()">Enter</button>
 
         </div>
       </div>
       <div id="page4" v-if="page=='4'">
-        <div>Other player has disconnected </div>
+        <div id="loseimage"></div>
+        <h3>Other player has disconnected </h3>
+        <button id="playAgain" onClick="window.location.reload();">Back To Menu</button>
+
       </div>
       <!-- <div id="page4 page" v-if="page == 'page4'">
         <div id="player1-board">

@@ -16,7 +16,8 @@
   background-color: purple;
 }
 #page1,
-#page2 {
+#page2,
+#page4 {
   background-image: url("images/LoginBackground.png");
   background-size: cover;
   background-position: bottom;
@@ -237,4 +238,33 @@
   text-align: center;
   font-size: 1rem;
   cursor: pointer;
+}
+#page4{
+  justify-content:start;
+}
+#page4 #loseimage{
+  background-image: url("images/loseskull.png");
+  background-repeat:no-repeat;
+  background-size:contain;
+  width:500px;
+  height: 500px;
+}
+#page4 #playAgain{
+  border: rgb(254,195,4) 5px solid;
+  border-radius: 4px;
+  background-color:rgb(253,149,1);
+  height:auto;
+  width:auto;
+  font-size:2rem;
+  text-align:center;
+  font-family: 'Pirata One', cursive;
+  cursor: pointer;
+}
+#page4 h3{
+font-size:3rem;
+  text-align:center;
+  color: white;
+  -webkit-text-stroke-width: 2px;
+  -webkit-text-stroke-color: black;
+  font-family: 'Pirata One', cursive;
 }
