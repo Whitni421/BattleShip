@@ -26,6 +26,14 @@
         Your browser does not support the audio element.
       </audio>
       <div id="page1" v-if="page==1">
+        <div class="modal" v-show="modal">
+          <button @click="modalClose">X</button>
+          <h3><br>Instructions:<br><br>Enter your username and click the play button!<br><br>
+          You're going to place your ships. Make sure to be strategic. Drag and drop each
+           ship until you are satisfied and then click play. You will then decide your point of
+           attack at each turn by sending a missile to one space per turn. <br><br> The first to
+           hit all of the other players ship wins!</h3>
+        </div>
         <div class="logo"></div>
         <div id="login">
           
@@ -39,6 +47,7 @@
           />
           <button @click="load_screen()">Play</button>
         </div>
+        <button id="instr" @click="modalOpen"> ? </button>
       </div>
       <div id="page2" v-else-if="page==2">
         <div class="logo"></div>
