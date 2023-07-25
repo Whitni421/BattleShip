@@ -6,12 +6,13 @@ ws.addEventListener("open", () => {
   console.log("client connected");
 });
 
-window.addEventListener("DOMContentload", function () {
+window.addEventListener("load", function () {
   canvas = document.getElementById("canvas");
   ctx = canvas.getContext("2d");
-  canvas.width = window.innerWidth * 0.75;
-  canvas.height = window.innerHeight * 0.9;
+  canvas.width = window.innerWidth * 0.5;
+  canvas.height = window.innerHeight * 0.6;
   canvas.style.border = "5px solid black";
+  const ship = document.getElementById("ship");
 
   window.onresize = function () {
     canvas.width = window.innerWidth * 0.75;
@@ -54,7 +55,7 @@ window.addEventListener("DOMContentload", function () {
     };
 
     drawGrid = () => {
-      ctx.clearRect(0, 0, this.gridWidth, this.gridHeight);
+      // ctx.clearRect(0, 0, this.width, this.height);
       this.gridLines();
 
       // Highlight the cell on mouse hover
@@ -81,6 +82,18 @@ window.addEventListener("DOMContentload", function () {
             this.cellSize
           );
         }
+        this.player.draw();
+      });
+
+      canvas.addEventListener("mousedown", (e) => {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        this.gridLines();
+        this.player.draw();
+      });
+
+      canvas.addEventListener("mouseup", (e) => {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        this.gridLines();
         this.player.draw();
       });
     };
@@ -121,11 +134,11 @@ window.addEventListener("DOMContentload", function () {
         100,
         70,
         80,
-        300,
-        this.game.width - 190,
-        0,
+        200,
+        this.game.width - 90,
+        this.game.height - 360,
         90,
-        500
+        280
       );
       this.ships.push(ship5);
 
@@ -136,10 +149,10 @@ window.addEventListener("DOMContentload", function () {
         70,
         100,
         160,
-        this.game.width - 90,
-        0,
+        this.game.width - 170,
+        this.game.height - 360,
         100,
-        180
+        224
       );
       this.ships.push(ship4);
 
@@ -150,10 +163,10 @@ window.addEventListener("DOMContentload", function () {
         70,
         100,
         160,
-        this.game.width - 90,
-        180,
+        this.game.width - 250,
+        this.game.height - 360,
         100,
-        180
+        230
       );
       this.ships.push(ship4_2);
 
@@ -161,13 +174,13 @@ window.addEventListener("DOMContentload", function () {
         3,
         this,
         40,
-        40,
+        50,
         60,
         150,
-        this.game.width - 190,
-        240,
+        this.game.width - 160,
+        0,
         100,
-        150
+        185
       );
       this.ships.push(ship3);
 
@@ -175,13 +188,13 @@ window.addEventListener("DOMContentload", function () {
         3,
         this,
         40,
-        40,
+        50,
         60,
         150,
         this.game.width - 90,
-        360,
+        0,
         100,
-        150
+        185
       );
       this.ships.push(ship3_2);
 
@@ -192,23 +205,50 @@ window.addEventListener("DOMContentload", function () {
         70,
         60,
         80,
-        this.game.width - 150,
-        390,
+        this.game.width - 240,
+        40,
         90,
-        100
+        125
       );
       this.ships.push(ship2);
-    }
-
-    insertShips() {
-      for (location in this.ships.location) {
-        this.board[location[0]][location[1]] = 5;
-      }
     }
 
     draw() {
       for (let ship of this.ships) {
         ship.draw();
+      }
+    }
+
+    insertShips() {
+      const gridSize = this.game.gridSize - 1;
+
+      // Clear the board
+      for (let i = 0; i < gridSize; i++) {
+        for (let j = 0; j < gridSize; j++) {
+          this.board[i][j] = 0;
+        }
+      }
+
+      // Loop through each ship and update the board with its position
+      for (let ship of this.ships) {
+        // Calculate the starting grid coordinates based on the ship's position
+        const startGridX = ship.col;
+        const startGridY = ship.row;
+
+        // Depending on the ship's orientation, set the corresponding cells on the board to the ship's type (e.g., 5 for ship5, 4 for ship4, etc.)
+        if (ship.rotation) {
+          for (let i = 0; i < ship.type; i++) {
+            if (startGridX + i < gridSize && startGridY < gridSize) {
+              this.board[startGridY][startGridX + i] = 5;
+            }
+          }
+        } else {
+          for (let i = 0; i < ship.type; i++) {
+            if (startGridY + i < gridSize && startGridX < gridSize) {
+              this.board[startGridY + i][startGridX] = 5;
+            }
+          }
+        }
       }
     }
 
@@ -251,7 +291,7 @@ window.addEventListener("DOMContentload", function () {
       this.location = [];
       this.sunk = false;
       this.type = type;
-      this.image = document.getElementById("ship");
+      this.image = ship;
       this.spriteX = spriteX;
       this.spriteY = spriteY;
       this.spriteWidth = spriteWidth;
@@ -260,12 +300,21 @@ window.addEventListener("DOMContentload", function () {
       this.y = y;
       this.width = width;
       this.height = height;
+      this.mX = x;
+      this.mY = y;
+      this.row;
+      this.col;
       this.isDragging = false;
       this.startX = 0;
       this.startY = 0;
       canvas.addEventListener("mousedown", this.handleMouseDown.bind(this));
       canvas.addEventListener("mouseup", this.handleMouseUp.bind(this));
       canvas.addEventListener("mousemove", this.handleMouseMove.bind(this));
+    }
+
+    resetShip() {
+      this.x = this.mX;
+      this.y = this.mY;
     }
 
     // Handle drag and drop for ships
@@ -279,9 +328,12 @@ window.addEventListener("DOMContentload", function () {
         y >= this.y &&
         y < this.y + this.height
       ) {
+        this.y = y;
         this.isDragging = true;
         this.startX = x - this.x;
         this.startY = y - this.y;
+        this.player.draw();
+        this.draw();
         return;
       }
     }
@@ -294,8 +346,6 @@ window.addEventListener("DOMContentload", function () {
       if (this.isDragging) {
         this.x = x - this.startX;
         this.y = y - this.startY;
-        // this.player.game.drawGrid();
-        this.draw();
         return;
       }
     }
@@ -310,15 +360,20 @@ window.addEventListener("DOMContentload", function () {
         const gridY = Math.floor(mouseY / this.player.game.cellSize);
 
         // Calculate the snapped position within the grid
-        this.x = gridX * this.player.game.cellSize;
+        this.x =
+          gridX * this.player.game.cellSize - this.player.game.cellSize / 4;
         this.y = gridY * this.player.game.cellSize;
 
-        // Update the board with the new location
-        // this.insertShips();
+        this.row = gridY;
+        this.col = gridX;
 
-        this.player.game.drawGrid();
+        // Update the board with the new location
+        this.player.insertShips();
+
         this.changed = true;
+        this.player.game.drawGrid();
         this.draw();
+        console.log(this.player.board);
         return;
       }
     }
