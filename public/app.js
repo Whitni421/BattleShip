@@ -350,7 +350,7 @@ window.addEventListener("DOMContentload", function () {
 Vue.createApp({
   data() {
     return {
-      page: 1,
+      page: 3,
       username: "",
       player_turn: 0,
       userRequired: false,
@@ -369,14 +369,13 @@ Vue.createApp({
     // Start playing the audio when the Vue instance is mounted
   },
   methods: {
-    modalClose: function(){
-      this.modal=false;
+    modalClose: function () {
+      this.modal = false;
     },
-    modalOpen: function(){
+    modalOpen: function () {
       var h3 = document.createElement("h3");
-      h3.classList.add(".modal")
-      this.modal=true;
-
+      h3.classList.add(".modal");
+      this.modal = true;
     },
     connect: function () {
       // 1: Connect to websocket
@@ -412,20 +411,19 @@ Vue.createApp({
           const chatLogContainer = this.$refs.chatLogContainer;
           chatLogContainer.scrollTop = chatLogContainer.scrollHeight;
         }
-        if (this.player_turn == 1){
+        if (this.player_turn == 1) {
           console.log("Player2 made attack");
           this.Attack(index);
-          this.player1=$emit(new Player(msg.Data.player2));
+          this.player1 = $emit(new Player(msg.Data.player2));
           this.player_turn = 1;
           console.log(this.player_turn);
-
         }
         if (msg.EventType == "updateBoards") {
-          this.player1=$emit(new Player(msg.Data.player1));
-          this.player2=$emit(new Player(msg.Data.player2));
-          }
+          this.player1 = $emit(new Player(msg.Data.player1));
+          this.player2 = $emit(new Player(msg.Data.player2));
         }
-      },
+      };
+    },
     checkSunk() {
       for (let ship of this.ships) {
         let isSunk = true;
@@ -436,7 +434,7 @@ Vue.createApp({
             break;
           }
         }
-  
+
         if (isSunk) {
           for (let location of ship.location) {
             const [row, col] = location;
