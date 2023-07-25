@@ -362,12 +362,22 @@ Vue.createApp({
       UserInput: "",
       player: "",
       GameIndex: -1,
+      modal: false,
     };
   },
   mounted() {
     // Start playing the audio when the Vue instance is mounted
   },
   methods: {
+    modalClose: function(){
+      this.modal=false;
+    },
+    modalOpen: function(){
+      var h3 = document.createElement("h3");
+      h3.classList.add(".modal")
+      this.modal=true;
+
+    },
     connect: function () {
       // 1: Connect to websocket
       const protocol = window.location.protocol.includes("https")
