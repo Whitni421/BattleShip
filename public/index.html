@@ -61,10 +61,11 @@
         
       </div>
       <div id="page3" v-else-if="page==3">
-        <div>display this</div>
+        <div id="gameContent"> 
         <h3>Place your Ships</h3>
         <canvas id="canvas"></canvas>
         <button @click="insertShips()" id="PlaceShipsButton">Enter</button>
+      </div>
         <div id="liveChat">
           <div id="ChatLog" ref="chatLogContainer">
             <h3 v-for="chat in UserChat">{{chat}}</h3>
