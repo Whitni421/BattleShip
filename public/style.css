@@ -4,8 +4,7 @@
   box-sizing: border-box;
 }
 #ship {
-  /* display: none; */
-  display: flex;
+  display: none;
 }
 
 .sunk {
