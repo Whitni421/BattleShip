@@ -187,7 +187,7 @@
   border: rgb(254,195,4) 5px solid;
   background-color:rgb(253,149,1);
   border-radius: 50%;
-  display:Flex;
+  display:flex;
   justify-content:center;
   cursor:pointer;
   align-items:center;
@@ -270,24 +270,42 @@ font-size:3rem;
 }
 
 #instr {
-  width: 80px;
-  height: 80px;
+  width:70px;
+  height:70px;
+  position:relative;
+  z-index:4;
+  right: 940px;
+  border: rgb(254,195,4) 5px solid;
+  background-color:rgb(253,149,1);
   border-radius: 50%;
-  background-color: orange; /* You can change the color to your preference */
-  color: black;
-  font-size: 16px;
-  font-weight: bold;
-  border: none;
-  cursor: pointer;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  display:flex;
+  justify-content:center;
+  cursor:pointer;
+  align-items:center;
   transition: background-color 0.3s ease;
 }
 
+
+
 #instr:hover {
   background-color: #0056b3; /* Change the color on hover if desired */
+}
+
+#QM{
+  width:70px;
+  height:70px;
+  position:fixed;
+  z-index:4;
+  bottom:10px;
+  left:10px;
+  border: rgb(254,195,4) 5px solid;
+  background-color:rgb(253,149,1);
+  border-radius: 50%;
+  display:flex;
+  justify-content:center;
+  cursor:pointer;
+  align-items:center;
+  color:black;
 }
 
 
@@ -309,12 +327,19 @@ font-size:3rem;
 
 
 
+
+
 .modal h3 {
   margin-right: 20px; /* Create space between the heading and the button */
+  display:flex;
   justify-content: center;
+  align-items:center;
 }
 
+
+
 .modal button{
+  background-color:rgba(253, 251, 251, 0.9);
   border: none;
   padding: 5px 10px;
   border-radius: 50%;
