@@ -152,6 +152,7 @@ function prepareSend(object, player) {
       },
       index: object.index,
       player: "player1",
+      turn: object.turn,
     };
   } else if (player === "player2") {
     return {
@@ -165,6 +166,7 @@ function prepareSend(object, player) {
       },
       index: object.index,
       player: "player2",
+      turn: object.turn,
     };
   }
 }
@@ -218,6 +220,7 @@ class game {
       ],
     };
     this.index = varindex;
+    this.turn = "player1";
   }
 }
 //attack function
@@ -231,6 +234,7 @@ function attackFunction(data) {
     } else if (game.player2.board[data.cords[0]][data.cords[1]] == 0) {
       game.player2.board[data.cords[0]][data.cords[1]] = 1;
     }
+    changeTurn(data.index);
     sendData("Attack", data.index);
   }
   //checks to see if player2
@@ -241,6 +245,7 @@ function attackFunction(data) {
     } else if (game.player1.board[data.cords[0]][data.cords[1]] == 0) {
       game.player1.board[data.cords[0]][data.cords[1]] = 1;
     }
+    changeTurn(data.index);
     sendData("Attack", data.index);
   }
 }
@@ -310,4 +315,11 @@ function sendMessage(data) {
 
 function parrotFunction(data) {
   return;
+}
+function changeTurn(data) {
+  if (playingGames[data].turn == "player1") {
+    playingGames[data].turn = "player2";
+  } else {
+    playingGames[data].turn = "player1";
+  }
 }
