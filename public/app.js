@@ -402,24 +402,35 @@ Vue.createApp({
           const chatLogContainer = this.$refs.chatLogContainer;
           chatLogContainer.scrollTop = chatLogContainer.scrollHeight;
         }
-      };
-    },
-    checkSunk: function () {
-      var count = 0;
-      for (i in Game.player.ships) {
-        for (location in locations) {
-          if (board[locations] != 3) {
-            return;
-          } else {
-            count++;
-          }
-          if (count == location.length) {
-            Ship.sunk = true;
+        if (this.player_turn == 1){
+          console.log("Player2 made attack");
+          this.Attack(index);
+          this.player1=$emit(new Player(msg.Data.player2));
+          this.player_turn = 1;
+          console.log(this.player_turn);
+
+        }
+        if (msg.EventType == "updateBoards") {
+          this.player1=$emit(new Player(msg.Data.player1));
+          this.player2=$emit(new Player(msg.Data.player2));
           }
         }
-        if (Ship.sunk == true) {
-          for (location in locations) {
-            location.classList.add(".sunk");
+      },
+    checkSunk() {
+      for (let ship of this.ships) {
+        let isSunk = true;
+        for (let location of ship.location) {
+          const [row, col] = location;
+          if (this.board[row][col] !== 3) {
+            isSunk = false;
+            break;
+          }
+        }
+  
+        if (isSunk) {
+          for (let location of ship.location) {
+            const [row, col] = location;
+            this.board[row][col] = 4; // Mark the location as "sunk" (value 4)
           }
         }
       }
