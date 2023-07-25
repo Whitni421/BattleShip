@@ -46,7 +46,6 @@ wss.on("connection", function (ws) {
       var username = msg.Data.user;
       const clientId = clients.get(ws);
       // client.set(clientid, ws);
-      console.log(username);
       addPlayer(username, clientId);
     }
     if (msg.EventType == "attack") {
@@ -57,6 +56,10 @@ wss.on("connection", function (ws) {
     }
     if (msg.EventType == "UpdateBoard") {
       updateBoard(msg.Data);
+    }
+    if (msg.EventType == "SendMessage") {
+      console.log(msg);
+      sendMessage(msg.Data);
     }
   });
   ws.on("close", function () {
@@ -69,29 +72,30 @@ wss.on("connection", function (ws) {
         );
         openGames.splice(gameIndex, 1);
       }
-            // Find the game where the disconnected player was playing
-            const game = playingGames.find(
-              (game) => game.player1.id === clientId || game.player2.id === clientId
-            );
-      
-            if (game) {
-              const otherPlayer = game.player1.id === clientId ? game.player2.id : game.player1.id;
-      
-              // Notify the other player about the disconnection
-              otherPlayer.send(
-                JSON.stringify({
-                  EventType: "playerDisconnect",
-                  Data: { message: "Your opponent has disconnected from the game." },
-                })
-              );
-      
-              // Remove the game object from the playingGames array
-              const gameIndex = playingGames.indexOf(game);
-              if (gameIndex !== -1) {
-                playingGames.splice(gameIndex, 1);
-                console.log("Game removed from playingGames array.");
-              }
-            }
+      // Find the game where the disconnected player was playing
+      const game = playingGames.find(
+        (game) => game.player1.id === clientId || game.player2.id === clientId
+      );
+
+      if (game) {
+        const otherPlayer =
+          game.player1.id === clientId ? game.player2.id : game.player1.id;
+
+        // Notify the other player about the disconnection
+        otherPlayer.send(
+          JSON.stringify({
+            EventType: "playerDisconnect",
+            Data: { message: "Your opponent has disconnected from the game." },
+          })
+        );
+
+        // Remove the game object from the playingGames array
+        const gameIndex = playingGames.indexOf(game);
+        if (gameIndex !== -1) {
+          playingGames.splice(gameIndex, 1);
+          console.log("Game removed from playingGames array.");
+        }
+      }
     }
     // Remove the client from the clients map
     clients.delete(ws);
@@ -120,7 +124,6 @@ function addPlayer(player, id) {
     openGames.shift();
     openGames.shift();
     console.log(indexvar);
-    console.log(playingGames[indexvar]);
     playingGames[indexvar].player1.id.send(
       JSON.stringify({
         EventType: "initialize",
@@ -148,7 +151,8 @@ function prepareSend(object, player) {
         board: replaceFiveWithZero(object.player2.board),
       },
       index: object.index,
-      player: "player2",
+      player: "player1",
+      turn: object.turn,
     };
   } else if (player === "player2") {
     return {
@@ -162,6 +166,7 @@ function prepareSend(object, player) {
       },
       index: object.index,
       player: "player2",
+      turn: object.turn,
     };
   }
 }
@@ -207,7 +212,6 @@ class game {
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -216,6 +220,7 @@ class game {
       ],
     };
     this.index = varindex;
+    this.turn = "player1";
   }
 }
 //attack function
@@ -229,6 +234,7 @@ function attackFunction(data) {
     } else if (game.player2.board[data.cords[0]][data.cords[1]] == 0) {
       game.player2.board[data.cords[0]][data.cords[1]] = 1;
     }
+    changeTurn(data.index);
     sendData("Attack", data.index);
   }
   //checks to see if player2
@@ -239,6 +245,7 @@ function attackFunction(data) {
     } else if (game.player1.board[data.cords[0]][data.cords[1]] == 0) {
       game.player1.board[data.cords[0]][data.cords[1]] = 1;
     }
+    changeTurn(data.index);
     sendData("Attack", data.index);
   }
 }
@@ -280,6 +287,39 @@ function updateBoard(data) {
     sendData("updateBoards", index);
   }
 }
+
+function sendMessage(data) {
+  var game = playingGames[data.Index];
+  if (data.Player == "player1") {
+    game.player2.id.send(
+      JSON.stringify({
+        EventType: "SendMessage",
+        Data: {
+          Message: data.Message,
+          Username: data.Username,
+        },
+      })
+    );
+  } else if (data.Player == "player2") {
+    game.player1.id.send(
+      JSON.stringify({
+        EventType: "SendMessage",
+        Data: {
+          Message: data.Message,
+          Username: data.Username,
+        },
+      })
+    );
+  }
+}
+
 function parrotFunction(data) {
   return;
+}
+function changeTurn(data) {
+  if (playingGames[data].turn == "player1") {
+    playingGames[data].turn = "player2";
+  } else {
+    playingGames[data].turn = "player1";
+  }
 }

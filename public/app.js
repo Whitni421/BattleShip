@@ -408,10 +408,31 @@ Vue.createApp({
       page: 1,
       username: "",
       player_turn: 0,
-      player_turn: 0,
+      userRequired: false,
+      backgroundAudio: new Audio("/sound/background.mp3"), // Replace with the path to your audio file
+      isAudioPlaying: false,
+      musicToggle: false,
+      audioVolume: 0.01,
+      UserChat: [],
+      UserInput: "",
+      player: "",
+      GameIndex: -1,
+      modal: false,
     };
   },
+  mounted() {
+    // Start playing the audio when the Vue instance is mounted
+  },
   methods: {
+    modalClose: function(){
+      this.modal=false;
+    },
+    modalOpen: function(){
+      var h3 = document.createElement("h3");
+      h3.classList.add(".modal")
+      this.modal=true;
+
+    },
     connect: function () {
       // 1: Connect to websocket
       const protocol = window.location.protocol.includes("https")
@@ -429,52 +450,112 @@ Vue.createApp({
           console.log(msg.Data);
           this.page = 3;
           console.log(this.page);
+          this.player = msg.Data.player;
+          this.GameIndex = msg.Data.index;
+          console.log(this.player);
         }
         if (msg.EventType == "playerDisconnect") {
           console.log("Player disconnected");
           console.log(msg.Data);
           this.page = 4;
+
           console.log(this.page);
         }
-      };
-    },
+        if (msg.EventType == "SendMessage") {
+          console.log(msg);
+          this.UserChat.push(msg.Data.Username + ": " + msg.Data.Message);
+          const chatLogContainer = this.$refs.chatLogContainer;
+          chatLogContainer.scrollTop = chatLogContainer.scrollHeight;
+        }
+        if (this.player_turn == 1){
+          console.log("Player2 made attack");
+          this.Attack(index);
+          this.player1=$emit(new Player(msg.Data.player2));
+          this.player_turn = 1;
+          console.log(this.player_turn);
 
-    checkSunk: function () {
-      var count = 0;
-      for (i in Game.player.ships) {
-        for (location in locations) {
-          if (board[locations] != 3) {
-            return;
-          } else {
-            count++;
-          }
-          if (count == location.length) {
-            Ship.sunk = true;
+        }
+        if (msg.EventType == "updateBoards") {
+          this.player1=$emit(new Player(msg.Data.player1));
+          this.player2=$emit(new Player(msg.Data.player2));
           }
         }
-        if (Ship.sunk == true) {
-          for (location in locations) {
-            location.classList.add(".sunk");
+      },
+    checkSunk() {
+      for (let ship of this.ships) {
+        let isSunk = true;
+        for (let location of ship.location) {
+          const [row, col] = location;
+          if (this.board[row][col] !== 3) {
+            isSunk = false;
+            break;
+          }
+        }
+  
+        if (isSunk) {
+          for (let location of ship.location) {
+            const [row, col] = location;
+            this.board[row][col] = 4; // Mark the location as "sunk" (value 4)
           }
         }
       }
     },
     load_screen: function () {
       // Send username through websocket
-      this.page = 2;
-      this.socket.send(
-        JSON.stringify({
-          EventType: "username",
-          Data: { user: this.username },
-        })
-      );
-      this.page = 2;
-      this.socket.send(
-        JSON.stringify({
-          EventType: "username",
-          Data: { user: this.username },
-        })
-      );
+      if (this.username.trim() != "") {
+        if (!this.isAudioPlaying) {
+          this.toggleAudio();
+        }
+        this.page = 2;
+        this.userRequired = false;
+        this.socket.send(
+          JSON.stringify({
+            EventType: "username",
+            Data: { user: this.username },
+          })
+        );
+      } else {
+        this.userRequired = true;
+      }
+    },
+    toggleAudio() {
+      this.backgroundAudio.loop = true;
+      this.backgroundAudio.volume = this.audioVolume;
+      this.isAudioPlaying = !this.isAudioPlaying;
+      if (this.isAudioPlaying) {
+        this.playAudio();
+      } else {
+        this.pauseAudio();
+      }
+    },
+    playAudio() {
+      this.backgroundAudio.play();
+    },
+    pauseAudio() {
+      this.backgroundAudio.pause();
+    },
+    setAudioVolume() {
+      this.backgroundAudio.volume = this.audioVolume;
+    },
+    sendChat() {
+      if (this.UserInput) {
+        this.socket.send(
+          JSON.stringify({
+            EventType: "SendMessage",
+            Data: {
+              Message: this.UserInput,
+              Index: this.GameIndex,
+              Player: this.player,
+              Username: this.username,
+            },
+          })
+        );
+
+        this.UserChat.push(this.username + ": " + this.UserInput);
+        this.UserInput = "";
+        const chatLogContainer = this.$refs.chatLogContainer;
+        chatLogContainer.scrollTop = chatLogContainer.scrollHeight;
+      }
     },
   },
   created: function () {
