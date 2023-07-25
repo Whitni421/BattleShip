@@ -325,12 +325,7 @@ font-size:3rem;
   padding: 10px;
 };
 
-#align{
-  margin-right: 20px; /* Create space between the heading and the button */
-  display:flex;
-  justify-content: center;
-  align-items:center;
-}
+
 
 
 
