@@ -22,6 +22,7 @@ Vue.createApp({
       player: "",
       GameIndex: -1,
       modal: false,
+      gameObj: null,
     };
   },
   mounted() {
@@ -44,8 +45,8 @@ Vue.createApp({
         canvas.style.border = "5px solid black";
 
         window.onresize = function () {
-          canvas.width = window.innerWidth * 0.75;
-          canvas.height = window.innerHeight * 0.9;
+          canvas.width = 1280;
+          canvas.height = 760;
         };
 
         class Game {
@@ -394,23 +395,55 @@ Vue.createApp({
               const gridX = Math.floor(mouseX / this.player.game.cellSize);
               const gridY = Math.floor(mouseY / this.player.game.cellSize);
 
-              // Calculate the snapped position within the grid
-              this.x =
-                gridX * this.player.game.cellSize -
-                this.player.game.cellSize / 4;
-              this.y = gridY * this.player.game.cellSize;
+              // Check if the ship is within the grid
+              if (
+                gridX >= 0 &&
+                gridX < this.player.game.gridSize &&
+                (gridY >= 0) & (gridY < this.player.game.gridSize)
+              ) {
+                if (this.rotation) {
+                  if (gridX + this.type <= this.player.game.gridSize) {
+                    this.x =
+                      gridX * this.player.game.cellSize -
+                      this.player.game.cellSize / 4;
+                    this.y = gridY * this.player.game.cellSize;
 
-              this.row = gridY;
-              this.col = gridX;
+                    this.row = gridY;
+                    this.col = gridX;
 
-              // Update the board with the new location
-              this.player.insertShips();
+                    // Update the board with the new location
+                    this.player.insertShips();
 
-              this.changed = true;
-              this.player.game.drawGrid();
-              this.draw();
-              console.log(this.player.board);
-              return;
+                    this.changed = true;
+                    this.player.game.drawGrid();
+                    this.draw();
+                    console.log(this.player.board);
+                  }
+                } else if (!this.rotation) {
+                  if (gridY + this.type <= this.player.game.gridSize) {
+                    this.x =
+                      gridX * this.player.game.cellSize -
+                      this.player.game.cellSize / 4;
+                    this.y = gridY * this.player.game.cellSize;
+
+                    this.row = gridY;
+                    this.col = gridX;
+
+                    // Update the board with the new location
+                    this.player.insertShips();
+
+                    this.changed = true;
+                    this.player.game.drawGrid();
+                    this.draw();
+                    console.log(this.player.board);
+                  }
+                } else {
+                  this.resetShip();
+                  this.player.game.drawGrid();
+                  this.draw();
+                }
+                return;
+              }
             }
           }
 
@@ -434,6 +467,7 @@ Vue.createApp({
           game.player.createShips();
           game.render(ctx);
           console.log("game started");
+          this.gameObj = game;
         }
 
         init();
