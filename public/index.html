@@ -62,9 +62,10 @@
         
         
       </div>
-      <div id="page3" v-else-if="page==3">
-        <div>display this</div>
+      <div id="page3" v-show="page==3" >
+        <div id="gameContent" ref="gameContent">
         <h3>Place your Ships</h3>
+        <img src="images/ships.png" alt="ships" id="ship" />
         <canvas id="canvas"></canvas>
         <button @click="insertShips()" id="PlaceShipsButton">Enter</button>
         <div id="liveChat">
@@ -73,8 +74,8 @@
           </div>
           <input type="Text" placeholder="Enter Text" v-model="UserInput"  @keyup.enter="sendChat()" required>
           <button id="chatButton" @click="sendChat()">Enter</button>
-
-        </div>
+          </div>
+        </div>        
       </div>
       <div id="page4" v-if="page=='4'">
         <div id="loseimage"></div>

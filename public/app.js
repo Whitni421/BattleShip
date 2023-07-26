@@ -31,16 +31,17 @@ Vue.createApp({
     }
   },
   methods: {
-    loadCanvas() {
+    loadCanvas: function () {
+      var ctx;
+      var canvas;
       if (this.page == 3) {
         // window.addEventListener("load", function () {
         canvas = document.getElementById("canvas");
-        console.log(canvas);
         ctx = canvas.getContext("2d");
+        console.log(ctx);
         canvas.width = window.innerWidth * 0.5;
         canvas.height = window.innerHeight * 0.6;
         canvas.style.border = "5px solid black";
-        const ship = document.getElementById("ship");
 
         window.onresize = function () {
           canvas.width = window.innerWidth * 0.75;
@@ -319,7 +320,7 @@ Vue.createApp({
             this.location = [];
             this.sunk = false;
             this.type = type;
-            this.image = ship;
+            this.image = document.getElementById("ship");
             this.spriteX = spriteX;
             this.spriteY = spriteY;
             this.spriteWidth = spriteWidth;
@@ -463,6 +464,7 @@ Vue.createApp({
           console.log("success");
           console.log(msg.Data);
           this.page = 3;
+          this.loadCanvas();
           // call loadCanvas here!!
           this.player = msg.Data.player;
           this.GameIndex = msg.Data.index;

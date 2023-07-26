@@ -1,11 +1,11 @@
-@import url('https://fonts.googleapis.com/css2?family=Pirata+One&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Pirata+One&display=swap");
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 #ship {
-  display: flex;
+  display: none;
 }
 
 .sunk {
@@ -28,9 +28,8 @@
   flex-flow: column;
   justify-content: center;
   align-items: center;
-  overflow:hidden;
+  overflow: hidden;
 }
-
 
 #login {
   display: flex;
@@ -38,14 +37,14 @@
   background-image: url("images/chest_open.gif");
   background-size: contain;
   background-repeat: no-repeat;
-  background-position:center center;
+  background-position: center center;
   align-items: center;
-  justify-content:center;
-  gap:50px;
-  max-height:700px;
-  max-width:500px;
-  width:100%;;
-  height:100%;
+  justify-content: center;
+  gap: 50px;
+  max-height: 700px;
+  max-width: 500px;
+  width: 100%;
+  height: 100%;
 }
 
 #login input {
@@ -56,36 +55,34 @@
   text-align: center;
   font-size: 1rem;
 }
-#login button{
-  border: rgb(254,195,4) 5px solid;
+#login button {
+  border: rgb(254, 195, 4) 5px solid;
   border-radius: 4px;
-  background-color:rgb(253,149,1);
-  height:50px;
-  width:100px;
-  font-size:2rem;
-  text-align:center;
-  font-family: 'Pirata One', cursive;
+  background-color: rgb(253, 149, 1);
+  height: 50px;
+  width: 100px;
+  font-size: 2rem;
+  text-align: center;
+  font-family: "Pirata One", cursive;
   cursor: pointer;
-
 }
 #login h2 {
-  font-size:3rem;
+  font-size: 3rem;
   color: white;
   -webkit-text-stroke-width: 1px;
-    -webkit-text-stroke-color: black;
-    font-family: 'Pirata One', cursive;
-    text-align:center;
+  -webkit-text-stroke-color: black;
+  font-family: "Pirata One", cursive;
+  text-align: center;
 }
 .logo {
   background-image: url("images/RogueWavelogo.png");
-  background-size:contain;
+  background-size: contain;
   background-repeat: no-repeat;
-  background-position:center center;
-  width:100%;;
-  height:100%;
+  background-position: center center;
+  width: 100%;
+  height: 100%;
   max-width: 1212px;
   max-height: 400px;
-
 }
 #page3 {
   background-image: url("images/planks.png");
@@ -116,49 +113,48 @@
   border-radius: 4px;
 }
 #loadscreen {
-  position:relative;
+  position: relative;
   flex-direction: column;
   background-image: url("images/chest_close.gif");
   background-size: contain;
   background-repeat: no-repeat;
-  background-position:center center;
+  background-position: center center;
   align-items: center;
   justify-content: center;
-  max-height:700px;
-  max-width:500px;
-  width:100%;;
-  height:100%;
+  max-height: 700px;
+  max-width: 500px;
+  width: 100%;
+  height: 100%;
 }
-#loading{
-  z-index:2;
-  position:absolute;
-  top:20%;
-  left:50%;
-  display:flex;
-  justify-content:center;
-  align-items:center;
+#loading {
+  z-index: 2;
+  position: absolute;
+  top: 20%;
+  left: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   transform: translate(-50%, -50%);
 }
-#loading h3{
-  font-size:3rem;
-  text-align:center;
+#loading h3 {
+  font-size: 3rem;
+  text-align: center;
 
-  color: rgb(255,247,66);
+  color: rgb(255, 247, 66);
   -webkit-text-stroke-width: 2px;
-    -webkit-text-stroke-color: black;
-    font-family: 'Pirata One', cursive;
-
+  -webkit-text-stroke-color: black;
+  font-family: "Pirata One", cursive;
 }
 #loadingwheel {
   background-image: url("images/loading.png");
-  background-repeat:no-repeat;
-  background-size:contain;
-  position:absolute;
-  top:20%;
-  left:50%;
-  flex-direction:column;
+  background-repeat: no-repeat;
+  background-size: contain;
+  position: absolute;
+  top: 20%;
+  left: 50%;
+  flex-direction: column;
   height: 400px;
-  width:400px;
+  width: 400px;
   transform: translate(-50%, -50%);
   animation: spin 2s linear infinite;
 }
@@ -177,61 +173,57 @@
   animation: spin 2s linear infinite;
 }
 
-#toggleAudio{
-  width:70px;
-  height:70px;
-  position:fixed;
-  z-index:4;
-  bottom:10px;
-  right:10px;
-  border: rgb(254,195,4) 5px solid;
-  background-color:rgb(253,149,1);
+#toggleAudio {
+  width: 70px;
+  height: 70px;
+  position: fixed;
+  z-index: 4;
+  bottom: 10px;
+  right: 10px;
+  border: rgb(254, 195, 4) 5px solid;
+  background-color: rgb(253, 149, 1);
   border-radius: 50%;
-  display:flex;
-  justify-content:center;
-  cursor:pointer;
-  align-items:center;
-
+  display: flex;
+  justify-content: center;
+  cursor: pointer;
+  align-items: center;
 }
-#toggleAudio{
-  color:black;
-  
+#toggleAudio {
+  color: black;
 }
-#liveChat{
-  display:flex;
-  flex-flow:row wrap;
-  width:200px;
-  justify-content:space-between;
-  gap:5px;
-  position:fixed;
-  right:0px;
-
+#liveChat {
+  display: flex;
+  flex-flow: row wrap;
+  width: 200px;
+  justify-content: space-between;
+  gap: 5px;
+  position: fixed;
+  right: 0px;
 }
-#liveChat #ChatLog{
-  width:inherit;
-  height:350px;
-  overflow-x:hidden;
-  overflow-y:scroll;
-  background-color:white;
+#liveChat #ChatLog {
+  width: inherit;
+  height: 350px;
+  overflow-x: hidden;
+  overflow-y: scroll;
+  background-color: white;
   border: black 2px solid;
-  padding:10px;
+  padding: 10px;
 }
-#ChatLog h3{
-  width:95%;
-  overflow-wrap:break-word;
-  height:auto;
+#ChatLog h3 {
+  width: 95%;
+  overflow-wrap: break-word;
+  height: auto;
 }
-#liveChat input{
-  width:70%;
+#liveChat input {
+  width: 70%;
   border-radius: 10px;
   height: 30px;
   border: black 2px solid;
   text-align: center;
   font-size: 1rem;
-  
 }
-#liveChat #chatButton{
-  width:20%;
+#liveChat #chatButton {
+  width: 20%;
   border-radius: 10px;
   height: 30px;
   border: black 2px solid;
@@ -239,114 +231,108 @@
   font-size: 1rem;
   cursor: pointer;
 }
-#page4{
-  justify-content:start;
+#page4 {
+  justify-content: start;
 }
-#page4 #loseimage{
+#page4 #loseimage {
   background-image: url("images/loseskull.png");
-  background-repeat:no-repeat;
-  background-size:contain;
-  width:500px;
+  background-repeat: no-repeat;
+  background-size: contain;
+  width: 500px;
   height: 500px;
 }
-#page4 #playAgain{
-  border: rgb(254,195,4) 5px solid;
+#page4 #playAgain {
+  border: rgb(254, 195, 4) 5px solid;
   border-radius: 4px;
-  background-color:rgb(253,149,1);
-  height:auto;
-  width:auto;
-  font-size:2rem;
-  text-align:center;
-  font-family: 'Pirata One', cursive;
+  background-color: rgb(253, 149, 1);
+  height: auto;
+  width: auto;
+  font-size: 2rem;
+  text-align: center;
+  font-family: "Pirata One", cursive;
   cursor: pointer;
 }
-#page4 h3{
-font-size:3rem;
-  text-align:center;
+#page4 h3 {
+  font-size: 3rem;
+  text-align: center;
   color: white;
   -webkit-text-stroke-width: 2px;
   -webkit-text-stroke-color: black;
-  font-family: 'Pirata One', cursive;
+  font-family: "Pirata One", cursive;
 }
 
 #instr {
-  width:70px;
-  height:70px;
-  position:relative;
-  z-index:4;
+  width: 70px;
+  height: 70px;
+  position: relative;
+  z-index: 4;
   right: 940px;
-  border: rgb(254,195,4) 5px solid;
-  background-color:rgb(253,149,1);
+  border: rgb(254, 195, 4) 5px solid;
+  background-color: rgb(253, 149, 1);
   border-radius: 50%;
-  display:flex;
-  justify-content:center;
-  cursor:pointer;
-  align-items:center;
+  display: flex;
+  justify-content: center;
+  cursor: pointer;
+  align-items: center;
   transition: background-color 0.3s ease;
 }
-
-
 
 #instr:hover {
   background-color: #0056b3; /* Change the color on hover if desired */
 }
 
-#QM{
-  width:70px;
-  height:70px;
-  position:fixed;
-  z-index:4;
-  bottom:10px;
-  left:10px;
-  border: rgb(254,195,4) 5px solid;
-  background-color:rgb(253,149,1);
+#QM {
+  width: 70px;
+  height: 70px;
+  position: fixed;
+  z-index: 4;
+  bottom: 10px;
+  left: 10px;
+  border: rgb(254, 195, 4) 5px solid;
+  background-color: rgb(253, 149, 1);
   border-radius: 50%;
-  display:flex;
-  justify-content:center;
-  cursor:pointer;
-  align-items:center;
-  color:black;
+  display: flex;
+  justify-content: center;
+  cursor: pointer;
+  align-items: center;
+  color: black;
 }
-
 
 .modal {
   position: absolute;
   top: 50%; /* Adjust this value to position the overlay vertically */
   left: 50%; /* Adjust this value to position the overlay horizontally */
   transform: translate(-50%, -50%);
-  background-color: rgba(253, 251, 251, 0.9); /* Semi-transparent background color */
+  background-color: rgba(
+    253,
+    251,
+    251,
+    0.9
+  ); /* Semi-transparent background color */
   color: black;
   padding: 10px;
   z-index: 1; /* Ensure the overlay appears above other elements */
-  display:flex;
+  display: flex;
   justify-content: space-between;
   align-items: center;
-  flex-flow:column nowrap;
+  flex-flow: column nowrap;
   padding: 10px;
-};
-
-
-
-
+}
 
 .modal h3 {
   margin-right: 20px; /* Create space between the heading and the button */
-  display:flex;
+  display: flex;
   justify-content: center;
-  align-items:center;
+  align-items: center;
 }
 
-
-
-.modal button{
-  background-color:rgba(253, 251, 251, 0.9);
+.modal button {
+  background-color: rgba(253, 251, 251, 0.9);
   border: none;
   padding: 5px 10px;
   border-radius: 50%;
   cursor: pointer;
-  position:relative;
-  display:flex;
-  left:40%;
-  
-
+  position: relative;
+  display: flex;
+  left: 40%;
 }
