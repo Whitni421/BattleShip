@@ -64,16 +64,19 @@
       </div>
       <div id="page3" v-show="page==3" >
         <div id="gameContent" ref="gameContent">
-        <h3>Place your Ships</h3>
-        <img src="images/ships.png" alt="ships" id="ship" />
-        <canvas id="canvas"></canvas>
-        <button @click="insertShips()" id="PlaceShipsButton">Enter</button>
+          <h3>Place your Ships</h3>
+          <img src="images/ships.png" alt="ships" id="ship" />
+          <img src="images/shipsR.png" alt="ships" id="shipR" />
+          <canvas id="canvas"></canvas>
+        <button v-if="settingShips" @click="updateBoard()" id="PlaceShipsButton">Confirm Ships</button>
+        <!-- <button @click="resetShips()">Reset</button> -->
         <div id="liveChat">
           <div id="ChatLog" ref="chatLogContainer">
             <h3 v-for="chat in UserChat">{{chat}}</h3>
           </div>
           <input type="Text" placeholder="Enter Text" v-model="UserInput"  @keyup.enter="sendChat()" required>
           <button id="chatButton" @click="sendChat()">Enter</button>
+          <button id="resetShips" @click="resetShips()">Reset</button>
           </div>
         </div>        
       </div>

@@ -16,6 +16,48 @@ app.use(
     },
   })
 );
+class game {
+  constructor(player1, player2, varindex) {
+    this.player1 = {
+      name: player1[1],
+      id: player1[0],
+      index: varindex,
+      updated: true,
+      board: [
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      ],
+    };
+    this.player2 = {
+      name: player2[1],
+      id: player2[0],
+      index: varindex,
+      updated: false,
+      board: [
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      ],
+    };
+    this.index = varindex;
+    this.turn = "player1";
+  }
+}
 const openGames = [];
 const playingGames = [];
 // 2: Assign name to server
@@ -118,12 +160,9 @@ function addPlayer(player, id) {
     } else {
       indexvar = playingGames.length;
     }
-    console.log(indexvar);
-
     playingGames.push(new game(openGames[0], openGames[1], indexvar));
     openGames.shift();
     openGames.shift();
-    console.log(indexvar);
     playingGames[indexvar].player1.id.send(
       JSON.stringify({
         EventType: "initialize",
@@ -140,7 +179,7 @@ function addPlayer(player, id) {
 }
 //prepares data to be sent
 function prepareSend(object, player) {
-  if (player === "player1") {
+  if (player == "player1") {
     return {
       player1: {
         name: object.player1.name,
@@ -154,7 +193,7 @@ function prepareSend(object, player) {
       player: "player1",
       turn: object.turn,
     };
-  } else if (player === "player2") {
+  } else if (player == "player2") {
     return {
       player1: {
         name: object.player1.name,
@@ -170,7 +209,8 @@ function prepareSend(object, player) {
     };
   }
 }
-function replaceFiveWithZero(arr) {
+function replaceFiveWithZero(array) {
+  arr = array;
   for (let i = 0; i < arr.length; i++) {
     for (let j = 0; j < arr[i].length; j++) {
       if (arr[i][j] === 5) {
@@ -180,49 +220,7 @@ function replaceFiveWithZero(arr) {
   }
   return arr; // Return the modified array
 }
-class game {
-  constructor(player1, player2, varindex) {
-    console.log(varindex);
-    this.player1 = {
-      name: player1[1],
-      id: player1[0],
-      index: varindex,
-      updated: true,
-      board: [
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      ],
-    };
-    this.player2 = {
-      name: player2[1],
-      id: player2[0],
-      index: varindex,
-      updated: false,
-      board: [
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      ],
-    };
-    this.index = varindex;
-    this.turn = "player1";
-  }
-}
+
 //attack function
 function attackFunction(data) {
   game = playingGames[data.index];
@@ -270,17 +268,19 @@ function checkWin(game) {
 
 //updates boards after player creates them
 function updateBoard(data) {
-  index = data.index;
+  var index = data.index;
   game = playingGames[index];
   //updates player ones board when created
   if (data.player == "player1") {
     game.player1.board = data.board;
     game.player1.updated = true;
+    console.log("Player 1 board updated:", game.player1.board);
   }
   //updates player twos board on server when created
   if (data.player == "player2") {
     game.player2.board = data.board;
     game.player2.updated = true;
+    console.log("Player 2 board updated:", game.player2.board);
   }
   //once both players create a board it sends the boards back to players
   if (game.player2.updated && game.player1.updated) {
