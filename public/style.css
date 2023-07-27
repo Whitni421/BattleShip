@@ -98,7 +98,7 @@
   align-items: center;
 }
 #page3 #gameContent {
-  background-image: url("images/canvas background.png");
+  background-image: url("images/canvas_background.png");
   background-repeat: no-repeat;
   background-position: center;
   width: 85vw;
@@ -307,6 +307,7 @@ padding:5px;
   cursor: pointer;
   align-items: center;
   color: black;
+  font-family: "Pirata One", cursive;
 }
 
 .modal {
@@ -314,17 +315,17 @@ padding:5px;
   top: 50%; /* Adjust this value to position the overlay vertically */
   left: 50%; /* Adjust this value to position the overlay horizontally */
   transform: translate(-50%, -50%);
-  background-color: rgba(
-    253,
-    251,
-    251,
-    0.9
-  ); /* Semi-transparent background color */
+  background-image:url("images/canvas_background.png");
+  background-repeat: no-repeat;
+  background-size:contain;
+  height:700px;;
+  width:950px;
+  background-position:center center;
   color: black;
   padding: 10px;
   z-index: 1; /* Ensure the overlay appears above other elements */
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   flex-flow: column nowrap;
   padding: 10px;
@@ -335,6 +336,11 @@ padding:5px;
   display: flex;
   justify-content: center;
   align-items: center;
+  font-family: "Pirata One", cursive;
+  width: inherit;
+  width:70%;
+  font-size: 1.5rem;
+  
 }
 
 .modal button {
@@ -343,9 +349,16 @@ padding:5px;
   padding: 5px 10px;
   border-radius: 50%;
   cursor: pointer;
-  position: relative;
+  position: inherit;
   display: flex;
-  left: 40%;
+  right:140px;
+  top:110px;
+  border: black 5px solid;
+  background-color: white;
+  cursor: pointer;
+  align-items: center;
+  color: black;
+  font-family: "Pirata One", cursive;
 }
 #shipButtons{
   position:fixed;
@@ -355,5 +368,6 @@ padding:5px;
   align-items: center;
   flex-direction: row;
   width: 400px;
+  cursor:pointer;
   
 }
