@@ -30,7 +30,7 @@ Vue.createApp({
       game_Object: {},
       updated: false,
       status: "Place Your Ships",
-      displayBoard: ["player1", [], ""],
+      displayBoard: [this.player, [], "", true],
     };
   },
   mounted() {
@@ -86,9 +86,11 @@ Vue.createApp({
       canvas.height = 500;
       canvas.style.border = "5px solid #743b16";
       var ctx = this.canvas.getContext("2d");
+      var game_Object = this.game_Object;
+      var displayBoard = this.displayBoard;
 
       window.onresize = function () {
-        game.render(0);
+        game.render();
       };
 
       class Game {
@@ -98,7 +100,7 @@ Vue.createApp({
           this.height = canvas.height;
           this.topMargin = 260;
           this.debug = true;
-          this.player = new Player(this);
+          this.player = new Player(this, game_Object, displayBoard);
           this.mouse = {
             x: this.width * 0.5,
             y: this.height * 0.5,
@@ -156,6 +158,7 @@ Vue.createApp({
                 this.cellSize
               );
             }
+
             this.player.draw();
           });
 
@@ -171,14 +174,16 @@ Vue.createApp({
             this.player.draw();
           });
         };
-        render(board) {
+        render() {
           this.player.draw();
           this.drawGrid();
         }
       }
 
       class Player {
-        constructor(game) {
+        constructor(game, game_Object, displayBoard) {
+          this.game_Object = game_Object;
+          this.displayBoard = displayBoard;
           this.game = game;
           this.username = { username: "" };
           this.ships = [];
@@ -322,8 +327,13 @@ Vue.createApp({
         }
 
         draw() {
-          for (let ship of this.ships) {
-            ship.draw();
+          if (
+            this.game_Object.player == this.displayBoard[0] ||
+            this.displayBoard[3]
+          ) {
+            for (let ship of this.ships) {
+              ship.draw();
+            }
           }
         }
 
@@ -625,7 +635,7 @@ Vue.createApp({
 
       game = new Game(this.canvas);
       game.player.createShips();
-      game.render(ctx);
+      game.render();
       console.log("game started");
       this.gameObj = game;
     },
@@ -684,12 +694,34 @@ Vue.createApp({
           chatLogContainer.scrollTop = chatLogContainer.scrollHeight;
         }
         if (msg.EventType == "AttackMiss") {
-          cords = msg.Data.cords;
-          console.log(msg.Data);
+          this.cords = msg.Data.cords;
+          this.game_Object = msg.Data;
+          if (this.turn == "player1") {
+            this.status =
+              game_Object.player1.name +
+              "missed at " +
+              JSON.stringify(game_Object.cords);
+          } else if (this.game_Object.turn == "player2") {
+            this.status =
+              game_Object.player2.name +
+              "missed at " +
+              JSON.stringify(game_Object.cords);
+          }
         }
         if (msg.EventType == "AttackHit") {
-          cords = msg.Data.cords;
-          console.log(msg.Data);
+          this.cords = msg.Data.cords;
+          this.game_Object = msg.Data;
+          if (this.game_Object.turn == "player1") {
+            this.status =
+              game_Object.player2.name +
+              "Hit at " +
+              JSON.stringify(game_Object.cords);
+          } else if (this.game_Object.turn == "player1") {
+            this.status =
+              game_Object.player1.name +
+              "missed at " +
+              JSON.stringify(game_Object.cords);
+          }
         }
 
         if (this.game_Object.turn == 1) {
@@ -708,15 +740,16 @@ Vue.createApp({
           this.gameObj.player.board = msg.Data.board;
           this.game_Object = msg.Data;
           this.updated = true;
+          this.displayBoard[3] = false;
           console.log(msg.Data.player1);
           if (this.player == "player1") {
             this.status = "Attack";
-            this.displayBoard[0] = "Player2";
+            this.displayBoard[0] = "player2";
             this.displayBoard[2] = this.game_Object.player2.name;
             this.displayBoard[1] = this.game_Object.player2.board;
           } else {
             this.status = "Waiting for opponents turn";
-            this.displayBoard[0] = "Player2";
+            this.displayBoard[0] = "player2";
             this.displayBoard[2] = this.game_Object.player2.name;
             this.displayBoard[1] = this.game_Object.player2.board;
           }
