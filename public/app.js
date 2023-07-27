@@ -42,7 +42,8 @@ Vue.createApp({
 
         // If a dragging ship is found, toggle its rotation
         if (draggingShip) {
-          draggingShip.changeXY();jhkfl;
+          draggingShip.changeXY();
+          jhkfl;
           draggingShip.rotation = !draggingShip.rotation;
           this.gameObj.player.insertShips(); // Update the board with the new location after rotation change
           this.gameObj.player.draw(); // Redraw the ships
@@ -80,7 +81,7 @@ Vue.createApp({
         game.render();
       };
 
-      canvas.addEventListener("click", this.handleCanvasClick);
+      // canvas.addEventListener("click", this.handleCanvasClick);
 
       class Game {
         constructor() {
@@ -709,7 +710,6 @@ Vue.createApp({
         }
       };
     },
-
     Kraken: function (coordinates) {
       this.socket.send(
         JSON.stringify({
@@ -722,9 +722,10 @@ Vue.createApp({
     },
     checkWin: function () {
       for (ship in gameObj.player.ships) {
+        // Change "gameObj" to "this.gameObj"
         for (location in ship) {
           if (location == 4) {
-            GameOver = true;
+            GameOver = true; // Change "GameOver" to "this.GameOver"
           }
         }
       }
@@ -786,53 +787,8 @@ Vue.createApp({
         this.status = "Place all ships";
         console.log("not all ships are placed");
       }
-
-    // Attack(coordinates) {
-    //   canvas.addEventListener("mousedown", (e) => {
-    //     this.socket.send(
-    //       JSON.stringify({
-    //         EventType: "Attack",
-    //         Data: {
-    //           board: this.gameObj.player.board,
-    //           attack: coordinates,
-    //           player: this.player,
-    //           index: this.GameIndex,
-    //         },
-    //       })
-    //     );
-    //   });
-    // },
-
-    methods: {
-      // ... (existing methods
-      handleCanvasClick(event) {
-        const rect = canvas.getBoundingClientRect();
-        const mouseX = event.clientX - rect.left;
-        const mouseY = event.clientY - rect.top;
-    
-        // Calculate the grid cell index based on the mouse coordinates
-        const gridX = Math.floor(mouseX / this.gameObj.player.game.cellSize);
-        const gridY = Math.floor(mouseY / this.gameObj.player.game.cellSize);
-    
-        // Send the grid cell index to the server via WebSocket
-        this.Attack(gridX, gridY);
-      },
-    
-      Attack(row, col) {
-        // Send the attack coordinates to the server
-        this.socket.send(
-          JSON.stringify({
-            EventType: "Attack",
-            Data: {
-              board: this.gameObj.player.board,
-              attack: [row, col],
-              player: this.player,
-              index: this.GameIndex,
-            },
-          })
-        );
-      }
     },
+
     toggleAudio() {
       this.backgroundAudio.loop = true;
       this.backgroundAudio.volume = this.audioVolume;
@@ -883,8 +839,53 @@ Vue.createApp({
         chatLogContainer.scrollTop = chatLogContainer.scrollHeight;
       }
     },
+
+    // handleCanvasClick(event) {
+    //   const rect = canvas.getBoundingClientRect();
+    //   const mouseX = event.clientX - rect.left;
+    //   const mouseY = event.clientY - rect.top;
+
+    //   // Calculate the grid cell index based on the mouse coordinates
+    //   const gridX = Math.floor(mouseX / this.gameObj.player.game.cellSize);
+    //   const gridY = Math.floor(mouseY / this.gameObj.player.game.cellSize);
+
+    //   // Send the grid cell index to the server via WebSocket
+    //   this.Attack(gridX, gridY);
+    // },
+
+    // Attack(row, col) {
+    //   // Send the attack coordinates to the server
+    //   this.socket.send(
+    //     JSON.stringify({
+    //       EventType: "Attack",
+    //       Data: {
+    //         board: this.gameObj.player.board,
+    //         attack: [row, col],
+    //         player: this.player,
+    //         index: this.GameIndex,
+    //       },
+    //     })
+    //   );
+    //   console.log("attack sent");
+    // },
   },
   created: function () {
     this.connect();
   },
 }).mount("#app");
+
+// Attack(coordinates) {
+//   canvas.addEventListener("mousedown", (e) => {
+//     this.socket.send(
+//       JSON.stringify({
+//         EventType: "Attack",
+//         Data: {
+//           board: this.gameObj.player.board,
+//           attack: coordinates,
+//           player: this.player,
+//           index: this.GameIndex,
+//         },
+//       })
+//     );
+//   });
+// },
