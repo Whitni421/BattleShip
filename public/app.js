@@ -55,7 +55,7 @@ Vue.createApp({
       ctx = canvas.getContext("2d");
       canvas.width = 800;
       canvas.height = 500;
-      canvas.style.border = "5px solid black";
+      canvas.style.border = "5px solid #743b16";
 
       window.onresize = function () {
         game.render();
@@ -80,8 +80,7 @@ Vue.createApp({
         }
         gridLines = () => {
           ctx.lineWidth = 1;
-          ctx.strokeStyle = "black";
-          2;
+          ctx.strokeStyle = "#743b16";
           for (var row = 0; row < this.gridSize; row++) {
             for (var col = 0; col < this.gridSize; col++) {
               ctx.beginPath();
@@ -168,7 +167,7 @@ Vue.createApp({
         }
 
         createShips() {
-          //spriteX spriteY spriteWidth spriteHeight x y width height
+          //spriteX spriteY spriteWidth spriteHeight x y width height spriteXR SPRITEYR SPRITEWIDTHR SPRITEHEIGHTR WidthR HeightR
           let ship5 = new Ship(
             5,
             this,
@@ -221,7 +220,13 @@ Vue.createApp({
             this.game.width - 160,
             0,
             100,
-            170
+            170,
+            50,
+            623,
+            134,
+            58,
+            170,
+            100
           );
           this.ships.push(ship3);
 
@@ -249,7 +254,13 @@ Vue.createApp({
             this.game.width - 240,
             40,
             90,
-            125
+            125,
+            77,
+            477,
+            66,
+            50,
+            125,
+            90
           );
           this.ships.push(ship2);
         }
@@ -328,7 +339,7 @@ Vue.createApp({
           width,
           height
         ) {
-          //spriteX spriteY spriteWidth spriteHeight x y width height
+          //spriteX spriteY spriteWidth spriteHeight x y width height spriteXR SPRITEYR SPRITEWIDTHR SPRITEHEIGHTR WidthR HeightR
           this.player = player;
           this.rotation = false;
           this.location = [
@@ -350,6 +361,12 @@ Vue.createApp({
           this.y = y;
           this.width = width;
           this.height = height;
+          this.spriteXR = XR;
+          this.spriteYR = YR;
+          this.spriteWidthR = WidthR;
+          this.spriteHeightR = HeightR;
+          this.widthR = WidthR;
+          this.heightR = HeightR;
           this.mX = x;
           this.mY = y;
           this.row;
