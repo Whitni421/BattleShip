@@ -16,6 +16,49 @@ app.use(
     },
   })
 );
+class Game {
+  constructor(player1, player2, varindex) {
+    this.player1 = {
+      name: player1[1],
+      id: player1[0],
+      index: varindex,
+      updated: true,
+      board: [
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      ],
+    };
+    this.player2 = {
+      name: player2[1],
+      id: player2[0],
+      index: varindex,
+      updated: false,
+      board: [
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      ],
+    };
+    this.index = varindex;
+    this.turn = "player1";
+    this.cords = [0, 0];
+  }
+}
 const openGames = [];
 const playingGames = [];
 // 2: Assign name to server
@@ -118,12 +161,9 @@ function addPlayer(player, id) {
     } else {
       indexvar = playingGames.length;
     }
-    console.log(indexvar);
-
-    playingGames.push(new game(openGames[0], openGames[1], indexvar));
+    playingGames.push(new Game(openGames[0], openGames[1], indexvar));
     openGames.shift();
     openGames.shift();
-    console.log(indexvar);
     playingGames[indexvar].player1.id.send(
       JSON.stringify({
         EventType: "initialize",
@@ -139,11 +179,9 @@ function addPlayer(player, id) {
   }
 }
 //prepares data to be sent
-function prepareSend(object, player, cords) {
-  if (cords == undefined) {
-    cords = [0, 0];
-  }
-  if (player === "player1") {
+function prepareSend(object, player) {
+  var object = game;
+  if (player == "player1") {
     return {
       player1: {
         name: object.player1.name,
@@ -156,9 +194,9 @@ function prepareSend(object, player, cords) {
       index: object.index,
       player: "player1",
       turn: object.turn,
-      cords: cords,
+      cords: object.cords,
     };
-  } else if (player === "player2") {
+  } else if (player == "player2") {
     return {
       player1: {
         name: object.player1.name,
@@ -171,11 +209,12 @@ function prepareSend(object, player, cords) {
       index: object.index,
       player: "player2",
       turn: object.turn,
-      cords: cords,
+      cords: object.cords,
     };
   }
 }
-function replaceFiveWithZero(arr) {
+function replaceFiveWithZero(array) {
+  arr = JSON.parse(JSON.stringify(array));
   for (let i = 0; i < arr.length; i++) {
     for (let j = 0; j < arr[i].length; j++) {
       if (arr[i][j] === 5) {
@@ -185,49 +224,7 @@ function replaceFiveWithZero(arr) {
   }
   return arr; // Return the modified array
 }
-class game {
-  constructor(player1, player2, varindex) {
-    console.log(varindex);
-    this.player1 = {
-      name: player1[1],
-      id: player1[0],
-      index: varindex,
-      updated: true,
-      board: [
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      ],
-    };
-    this.player2 = {
-      name: player2[1],
-      id: player2[0],
-      index: varindex,
-      updated: false,
-      board: [
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      ],
-    };
-    this.index = varindex;
-    this.turn = "player1";
-  }
-}
+
 //attack function
 function attackFunction(data) {
   game = playingGames[data.index];
@@ -236,36 +233,42 @@ function attackFunction(data) {
     //if there is a ship at location it changes it to attacked ship if not it changes it to miss
     if (game.player2.board[data.cords[0]][data.cords[1]] == 5) {
       game.player2.board[data.cords[0]][data.cords[1]] = 3;
+      changeTurn(data.index);
+      playingGames[data.index].cords = data.cords;
+      sendData("AttackHit", data.index);
     } else if (game.player2.board[data.cords[0]][data.cords[1]] == 0) {
       game.player2.board[data.cords[0]][data.cords[1]] = 1;
+      playingGames[data.index].cords = data.cords;
+      changeTurn(data.index);
+      sendData("AttackMiss", data.index);
     }
-    changeTurn(data.index);
-    sendData("Attack", data.index, data.cords);
   }
   //checks to see if player2
   if (data.player == "player2") {
     //if there is a ship at location it changes it to attacked ship if not it changes it to miss
     if (game.player1.board[data.cords[0]][data.cords[1]] == 5) {
       game.player1.board[data.cords[0]][data.cords[1]] = 3;
+      changeTurn(data.index);
+      sendData("AttackHit", data.index);
     } else if (game.player1.board[data.cords[0]][data.cords[1]] == 0) {
       game.player1.board[data.cords[0]][data.cords[1]] = 1;
+      changeTurn(data.index);
+      sendData("AttackMiss", data.index);
     }
-    changeTurn(data.index);
-    sendData("Attack", data.index, data.cords);
   }
 }
 //function sends data back to players
-function sendData(type, indexvar, cords) {
+function sendData(type, indexvar) {
   playingGames[indexvar].player1.id.send(
     JSON.stringify({
       EventType: type,
-      Data: prepareSend(playingGames[indexvar], "player1", cords),
+      Data: prepareSend(playingGames[indexvar], "player1"),
     })
   );
   playingGames[indexvar].player2.id.send(
     JSON.stringify({
       EventType: type,
-      Data: prepareSend(playingGames[indexvar], "player2", cords),
+      Data: prepareSend(playingGames[indexvar], "player2"),
     })
   );
 }
@@ -275,20 +278,25 @@ function checkWin(game) {
 
 //updates boards after player creates them
 function updateBoard(data) {
-  index = data.index;
+  var index = data.index;
   game = playingGames[index];
   //updates player ones board when created
   if (data.player == "player1") {
-    game.player1.board = data.board;
-    game.player1.updated = true;
+    playingGames[index].player1.board = data.board;
+    playingGames[index].player1.updated = true;
+    console.log("Player 1 board updated:", playingGames[index].player1.board);
   }
   //updates player twos board on server when created
   if (data.player == "player2") {
-    game.player2.board = data.board;
-    game.player2.updated = true;
+    playingGames[index].player2.board = data.board;
+    playingGames[index].player2.updated = true;
+    console.log("Player 2 board updated:", playingGames[index].player2.board);
   }
   //once both players create a board it sends the boards back to players
-  if (game.player2.updated && game.player1.updated) {
+  if (
+    playingGames[index].player1.updated &&
+    playingGames[index].player2.updated
+  ) {
     sendData("updateBoards", index);
   }
 }
@@ -319,33 +327,7 @@ function sendMessage(data) {
 }
 
 function parrotFunction(data) {
-  game = playingGames[data.index];
-  //checks to see if player is one
-  if (data.player == "player1") {
-    //if there is a ship at location it changes it to attacked ship if not it changes it to miss
-    for (let i = 0; i < data.cords.length; i++) {
-      if (game.player2.board[data.cords[i][0]][data.cords[i][1]] == 5) {
-        game.player2.board[data.cords[i][0]][data.cords[i][1]] = 2;
-      } else if (game.player2.board[data.cords[i][0]][data.cords[i][1]] == 0) {
-        game.player2.board[data.cords[i][0]][data.cords[i][1]] = 0;
-      }
-    }
-    changeTurn(data.index);
-    sendData("Attack", data.index, data.cords);
-  }
-  //checks to see if player2
-  if (data.player == "player2") {
-    //if there is a ship at location it changes it to attacked ship if not it changes it to miss
-    for (let j = 0; j < data.cords.length; j++) {
-      if (game.player2.board[data.cords[j][0]][data.cords[j][1]] == 5) {
-        game.player2.board[data.cords[j][0]][data.cords[j][1]] = 2;
-      } else if (game.player2.board[data.cords[i][0]][data.cords[j][1]] == 0) {
-        game.player2.board[data.cords[j][0]][data.cords[j][1]] = 0;
-      }
-    }
-    changeTurn(data.index);
-    sendData("Parrot", data.index, data.cords);
-  }
+  return;
 }
 function changeTurn(data) {
   if (playingGames[data].turn == "player1") {

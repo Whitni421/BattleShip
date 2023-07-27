@@ -28,7 +28,7 @@
       <div id="page1" v-if="page==1">
         <div class="modal" v-show="modal">
           <button @click="modalClose">X</button>
-          <h3><br>Instructions:<br><br>Ahoy, me hearties! Prepare to embark on a daring pirate-themed battleship game where ye aim to be the last pirate standing! Each player secretly places their ships on a 10x10 grid and takes turns calling out coordinates to attack their opponent's ships. Mark yer hits and misses on the "Opponent's Grid," and sink their ships to Davy Jones' locker! The swashbucklin' pirate with ships still afloat shall be crowned the Pirate Captain and claim victory! May the winds of fortune favor the boldest and most cunning pirate. Yo ho ho, and a bottle of rum!</h3>
+          <h3>Instructions:<br><br>Ahoy, me hearties! Prepare to embark on a daring pirate-themed battleship game where ye aim to be the last pirate standing! Each player secretly places their ships on a 10x10 grid and takes turns calling out coordinates to attack their opponent's ships. Mark yer hits and misses on the "Opponent's Grid," and sink their ships to Davy Jones' locker! The swashbucklin' pirate with ships still afloat shall be crowned the Pirate Captain and claim victory! May the winds of fortune favor the boldest and most cunning pirate. Yo ho ho, and a bottle of rum!</h3>
         </div>
         <div class="logo"></div>
         <div id="login">
@@ -64,16 +64,22 @@
       </div>
       <div id="page3" v-show="page==3" >
         <div id="gameContent" ref="gameContent">
-        <h3>Place your Ships</h3>
-        <img src="images/ships.png" alt="ships" id="ship" />
-        <canvas id="canvas"></canvas>
-        <button @click="insertShips()" id="PlaceShipsButton">Enter</button>
+          <h3>{{status}}</h3>
+          <img src="images/ships.png" alt="ships" id="ship" />
+          <img src="images/shipsR.png" alt="ships" id="shipR" />
+          <canvas id="canvas"></canvas>
+          <div id="shipButtons">
+        <button v-if="settingShips" @click="updateBoard()" id="PlaceShipsButton">Confirm Ships</button>
+        <button v-if="settingShips" id="resetShips" @click="resetShips()">Reset</button>
+      </div>
+        <!-- <button @click="resetShips()">Reset</button> -->
         <div id="liveChat">
           <div id="ChatLog" ref="chatLogContainer">
             <h3 v-for="chat in UserChat">{{chat}}</h3>
           </div>
           <input type="Text" placeholder="Enter Text" v-model="UserInput"  @keyup.enter="sendChat()" required>
           <button id="chatButton" @click="sendChat()">Enter</button>
+          
           </div>
         </div>        
       </div>
