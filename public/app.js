@@ -1,6 +1,6 @@
 const ws = new WebSocket("ws://localhost:8080");
 const URL = "http://localhost:8080/";
-var canvas;
+var canvas = document.getElementById("canvas");
 var ctx;
 ws.addEventListener("open", () => {
   console.log("client connected");
@@ -10,6 +10,7 @@ Vue.createApp({
   data() {
     return {
       debug: true,
+      canvas: 0,
       page: 1,
       username: "",
       player_turn: 0,
@@ -33,6 +34,7 @@ Vue.createApp({
     };
   },
   mounted() {
+    this.canvas = document.getElementById("canvas");
     document.addEventListener("keydown", (e) => {
       console.log(e);
       if (e.key == "r") {
@@ -42,14 +44,23 @@ Vue.createApp({
 
         // If a dragging ship is found, toggle its rotation
         if (draggingShip) {
-          draggingShip.changeXY();
-          jhkfl;
+          draggingShip.changeXY(e);
           draggingShip.rotation = !draggingShip.rotation;
           this.gameObj.player.insertShips(); // Update the board with the new location after rotation change
           this.gameObj.player.draw(); // Redraw the ships
-          this.gameObj.drawGrid(); // Redraw the grid
+          this.gameObj.drawGrid(0); // Redraw the grid
         }
       }
+
+      document.addEventListener("mouseup", (e) => {
+        if (
+          this.game_Object.turn == this.player &&
+          this.updated &&
+          this.player != this.displayBoard[0]
+        ) {
+          this.attack(e);
+        }
+      });
     });
     // Start playing the audio when the Vue instance is mounted
     if (this.page === 3) {
@@ -67,24 +78,22 @@ Vue.createApp({
       }
     },
     loadCanvas: function () {
-      var ctx;
-      var canvas;
       var game;
+      console.log(this.canvas);
+      var canvas = this.canvas;
       // window.addEventListener("load", function () {
-      canvas = document.getElementById("canvas");
-      ctx = canvas.getContext("2d");
       canvas.width = 800;
       canvas.height = 500;
       canvas.style.border = "5px solid #743b16";
+      var ctx = this.canvas.getContext("2d");
 
       window.onresize = function () {
-        game.render();
+        game.render(0);
       };
-
-      // canvas.addEventListener("click", this.handleCanvasClick);
 
       class Game {
         constructor() {
+          this.canvas = canvas;
           this.width = canvas.width;
           this.height = canvas.height;
           this.topMargin = 260;
@@ -136,6 +145,7 @@ Vue.createApp({
 
             // Draw grid
             this.gridLines();
+            // console.log(this.displayBoard[1]);
 
             if (row < this.gridSize && col < this.gridSize) {
               ctx.fillStyle = "rgba(0, 0, 255, 0.2)";
@@ -161,7 +171,7 @@ Vue.createApp({
             this.player.draw();
           });
         };
-        render() {
+        render(board) {
           this.player.draw();
           this.drawGrid();
         }
@@ -450,14 +460,16 @@ Vue.createApp({
           }
         }
 
-        changeXY() {
+        changeXY(e) {
           const rect = canvas.getBoundingClientRect();
           const x = e.clientX - rect.left;
           const y = e.clientY - rect.top;
           if (this.rotation) {
             this.x = x;
+            this.y = y - this.height / 2;
           } else {
             this.y = y;
+            this.x = x - this.width / 2;
           }
         }
 
@@ -475,6 +487,7 @@ Vue.createApp({
           )
             if (this.rotation) {
               this.x = x;
+              this.y = y - this.height / 2;
               this.isDragging = true;
               this.startX = x - this.x;
               this.startY = y - this.y;
@@ -483,6 +496,7 @@ Vue.createApp({
               return;
             } else {
               this.y = y;
+              this.x = x - this.width / 2;
               this.isDragging = true;
               this.startX = x - this.x;
               this.startY = y - this.y;
@@ -519,7 +533,8 @@ Vue.createApp({
             if (
               gridX >= 0 &&
               gridX < this.player.game.gridSize &&
-              (gridY >= 0) & (gridY < this.player.game.gridSize)
+              gridY >= 0 &&
+              gridY < this.player.game.gridSize
             ) {
               if (this.rotation) {
                 if (gridX + this.type <= this.player.game.gridSize) {
@@ -608,7 +623,7 @@ Vue.createApp({
         }
       }
 
-      game = new Game(canvas);
+      game = new Game(this.canvas);
       game.player.createShips();
       game.render(ctx);
       console.log("game started");
@@ -670,28 +685,24 @@ Vue.createApp({
         }
         if (msg.EventType == "AttackMiss") {
           cords = msg.Data.cords;
-          this.Attack(cords);
-          var location = msg.Data.board[coordinates[0]][coordinates[1]];
-          location.classList.add(".miss");
+          console.log(msg.Data);
         }
         if (msg.EventType == "AttackHit") {
           cords = msg.Data.cords;
-          this.Attack(cords);
-          var location = msg.Data.board[coordinates[0]][coordinates[1]];
-          location.classList.add(".hit");
+          console.log(msg.Data);
         }
 
-        if (this.player_turn == 1) {
+        if (this.game_Object.turn == 1) {
           console.log("Player2 made attack");
           this.Attack(index);
-          this.player_turn = 0;
-          console.log(this.player_turn);
+          this.game_Object.turn = 0;
+          console.log(this.game_Object.turn);
         }
-        // if (this.player_turn == 0) {
+        // if (this.game_Object.turn == 0) {
         //   console.log("Player2 made attack");
         //   this.Attack(index);
-        //   this.player_turn = 1;
-        //   console.log(this.player_turn);
+        //   this.game_Object.turn = 1;
+        //   console.log(this.game_Object.turn);
         // }
         if (msg.EventType == "updateBoards") {
           this.gameObj.player.board = msg.Data.board;
@@ -700,12 +711,14 @@ Vue.createApp({
           console.log(msg.Data.player1);
           if (this.player == "player1") {
             this.status = "Attack";
-            this.displayBoard[2] = this.game_Object.player1.name;
-            this.displayBoard[1] = this.game_Object.player1.board;
+            this.displayBoard[0] = "Player2";
+            this.displayBoard[2] = this.game_Object.player2.name;
+            this.displayBoard[1] = this.game_Object.player2.board;
           } else {
             this.status = "Waiting for opponents turn";
+            this.displayBoard[0] = "Player2";
             this.displayBoard[2] = this.game_Object.player2.name;
-            this.displayBoard[1] = this.game_Object.player1.board;
+            this.displayBoard[1] = this.game_Object.player2.board;
           }
         }
       };
@@ -720,16 +733,16 @@ Vue.createApp({
         })
       );
     },
-    checkWin: function () {
-      for (ship in gameObj.player.ships) {
-        // Change "gameObj" to "this.gameObj"
-        for (location in ship) {
-          if (location == 4) {
-            GameOver = true; // Change "GameOver" to "this.GameOver"
-          }
-        }
-      }
-    },
+    // checkWin: function () {
+    //   for (ship in gameObj.player.ships) {
+    //     // Change "gameObj" to "this.gameObj"
+    //     for (location in ship) {
+    //       if (location == 4) {
+    //         GameOver = true; // Change "GameOver" to "this.GameOver"
+    //       }
+    //     }
+    //   }
+    // },
 
     checkSunk() {
       for (let ship of this.ships) {
@@ -771,6 +784,8 @@ Vue.createApp({
     updateBoard: function () {
       if (this.gameObj.player.allSet() == true) {
         this.settingShips = false;
+        this.canvas.width = 500;
+        this.gameObj.render();
         this.gameObj.player.setAllShips();
         this.status = "Waiting for other player";
         this.socket.send(
@@ -840,52 +855,38 @@ Vue.createApp({
       }
     },
 
-    // handleCanvasClick(event) {
-    //   const rect = canvas.getBoundingClientRect();
-    //   const mouseX = event.clientX - rect.left;
-    //   const mouseY = event.clientY - rect.top;
+    attack(e) {
+      const rect = this.gameObj.canvas.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
 
-    //   // Calculate the grid cell index based on the mouse coordinates
-    //   const gridX = Math.floor(mouseX / this.gameObj.player.game.cellSize);
-    //   const gridY = Math.floor(mouseY / this.gameObj.player.game.cellSize);
+      const row = Math.floor(y / this.gameObj.cellSize);
+      const col = Math.floor(x / this.gameObj.cellSize);
+      console.log("test");
 
-    //   // Send the grid cell index to the server via WebSocket
-    //   this.Attack(gridX, gridY);
-    // },
-
-    // Attack(row, col) {
-    //   // Send the attack coordinates to the server
-    //   this.socket.send(
-    //     JSON.stringify({
-    //       EventType: "Attack",
-    //       Data: {
-    //         board: this.gameObj.player.board,
-    //         attack: [row, col],
-    //         player: this.player,
-    //         index: this.GameIndex,
-    //       },
-    //     })
-    //   );
-    //   console.log("attack sent");
-    // },
+      if (
+        col >= 0 &&
+        col < this.gameObj.gridSize &&
+        row >= 0 &&
+        row < this.gameObj.gridSize
+      ) {
+        console.log(col, row);
+        var attackCords = [col, row];
+        this.socket.send(
+          JSON.stringify({
+            EventType: "attack",
+            Data: {
+              board: this.gameObj.player.board,
+              player: this.player,
+              index: this.GameIndex,
+              cords: attackCords,
+            },
+          })
+        );
+      }
+    },
   },
   created: function () {
     this.connect();
   },
 }).mount("#app");
-
-// Attack(coordinates) {
-//   canvas.addEventListener("mousedown", (e) => {
-//     this.socket.send(
-//       JSON.stringify({
-//         EventType: "Attack",
-//         Data: {
-//           board: this.gameObj.player.board,
-//           attack: coordinates,
-//           player: this.player,
-//           index: this.GameIndex,
-//         },
-//       })
-//     );
-//   });
-// },

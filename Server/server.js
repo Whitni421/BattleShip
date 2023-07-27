@@ -235,11 +235,13 @@ function attackFunction(data) {
       game.player2.board[data.cords[0]][data.cords[1]] = 3;
       changeTurn(data.index);
       playingGames[data.index].cords = data.cords;
+      console.log("hit" + data.cords);
       sendData("AttackHit", data.index);
     } else if (game.player2.board[data.cords[0]][data.cords[1]] == 0) {
       game.player2.board[data.cords[0]][data.cords[1]] = 1;
       playingGames[data.index].cords = data.cords;
       changeTurn(data.index);
+      console.log("miss" + data.cords);
       sendData("AttackMiss", data.index);
     }
   }

@@ -95,11 +95,7 @@
             <button v-if="settingShips" id="resetShips" @click="resetShips()">
               Reset
             </button>
-            <button
-              v-if="!settingShips"
-              id="ToggleBoard"
-              @click="toggleBoard()"
-            >
+            <button v-if="updated" id="ToggleBoard" @click="toggleBoard()">
               Toggle Boards
             </button>
           </div>
