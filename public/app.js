@@ -27,6 +27,7 @@ Vue.createApp({
       GameOver: false,
       settingShips: true,
       opponents_board: [],
+      status: "Place Your Ships",
     };
   },
   mounted() {
@@ -368,7 +369,6 @@ Vue.createApp({
           this.draw();
           this.player.game.drawGrid();
         }
-
         // Handle drag and drop for ships
         handleMouseDown(e) {
           const rect = canvas.getBoundingClientRect();

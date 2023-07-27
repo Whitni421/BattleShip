@@ -105,13 +105,22 @@
   height: 100%;
   background-size: contain;
   display: Flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   flex-flow: column nowrap;
 }
-#page3 #PlaceShipsButton {
-  border: black 5px solid;
-  border-radius: 4px;
+#page3 #shipButtons button {
+padding:5px;
+  border: rgb(254, 195, 4) 5px solid;
+  background-color: rgb(253, 149, 1);
+  border-radius: 5px;
+  display: flex;
+  justify-content: center;
+  cursor: pointer;
+  align-items: center;
+  color: black;
+  font-family: "Pirata One", cursive;
+  font-size:2rem;
 }
 #loadscreen {
   position: relative;
@@ -199,11 +208,12 @@
   justify-content: space-between;
   gap: 5px;
   position: fixed;
+  top:20%;
   right: 0px;
 }
 #liveChat #ChatLog {
   width: inherit;
-  height: 350px;
+  height: 400px;
   overflow-x: hidden;
   overflow-y: scroll;
   background-color: white;
@@ -336,4 +346,14 @@
   position: relative;
   display: flex;
   left: 40%;
+}
+#shipButtons{
+  position:fixed;
+  bottom:30px;
+  display:flex;
+  justify-content:space-evenly;
+  align-items: center;
+  flex-direction: row;
+  width: 400px;
+  
 }

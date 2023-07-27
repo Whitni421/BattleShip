@@ -16,7 +16,7 @@ app.use(
     },
   })
 );
-class game {
+class Game {
   constructor(player1, player2, varindex) {
     this.player1 = {
       name: player1[1],
@@ -160,7 +160,7 @@ function addPlayer(player, id) {
     } else {
       indexvar = playingGames.length;
     }
-    playingGames.push(new game(openGames[0], openGames[1], indexvar));
+    playingGames.push(new Game(openGames[0], openGames[1], indexvar));
     openGames.shift();
     openGames.shift();
     playingGames[indexvar].player1.id.send(
@@ -178,7 +178,8 @@ function addPlayer(player, id) {
   }
 }
 //prepares data to be sent
-function prepareSend(object, player) {
+function prepareSend(game, player) {
+  var object = game;
   if (player == "player1") {
     return {
       player1: {
@@ -210,7 +211,7 @@ function prepareSend(object, player) {
   }
 }
 function replaceFiveWithZero(array) {
-  arr = array;
+  arr = JSON.parse(JSON.stringify(array));
   for (let i = 0; i < arr.length; i++) {
     for (let j = 0; j < arr[i].length; j++) {
       if (arr[i][j] === 5) {
@@ -272,18 +273,21 @@ function updateBoard(data) {
   game = playingGames[index];
   //updates player ones board when created
   if (data.player == "player1") {
-    game.player1.board = data.board;
-    game.player1.updated = true;
-    console.log("Player 1 board updated:", game.player1.board);
+    playingGames[index].player1.board = data.board;
+    playingGames[index].player1.updated = true;
+    console.log("Player 1 board updated:", playingGames[index].player1.board);
   }
   //updates player twos board on server when created
   if (data.player == "player2") {
-    game.player2.board = data.board;
-    game.player2.updated = true;
-    console.log("Player 2 board updated:", game.player2.board);
+    playingGames[index].player2.board = data.board;
+    playingGames[index].player2.updated = true;
+    console.log("Player 2 board updated:", playingGames[index].player2.board);
   }
   //once both players create a board it sends the boards back to players
-  if (game.player2.updated && game.player1.updated) {
+  if (
+    playingGames[index].player1.updated &&
+    playingGames[index].player2.updated
+  ) {
     sendData("updateBoards", index);
   }
 }
