@@ -180,7 +180,6 @@ function addPlayer(player, id) {
 }
 //prepares data to be sent
 function prepareSend(object, player) {
-  var object = game;
   if (player == "player1") {
     return {
       player1: {
@@ -227,7 +226,7 @@ function replaceFiveWithZero(array) {
 
 //attack function
 function attackFunction(data) {
-  game = playingGames[data.index];
+  var game = playingGames[data.index];
   //checks to see if player is one
   if (data.player == "player1") {
     //if there is a ship at location it changes it to attacked ship if not it changes it to miss
