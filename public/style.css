@@ -110,7 +110,7 @@
   flex-flow: column nowrap;
 }
 #page3 #shipButtons button {
-padding:5px;
+  padding: 5px;
   border: rgb(254, 195, 4) 5px solid;
   background-color: rgb(253, 149, 1);
   border-radius: 5px;
@@ -120,7 +120,7 @@ padding:5px;
   align-items: center;
   color: black;
   font-family: "Pirata One", cursive;
-  font-size:2rem;
+  font-size: 2rem;
 }
 #loadscreen {
   position: relative;
@@ -208,7 +208,7 @@ padding:5px;
   justify-content: space-between;
   gap: 5px;
   position: fixed;
-  top:20%;
+  top: 20%;
   right: 0px;
 }
 #liveChat #ChatLog {
@@ -315,12 +315,12 @@ padding:5px;
   top: 50%; /* Adjust this value to position the overlay vertically */
   left: 50%; /* Adjust this value to position the overlay horizontally */
   transform: translate(-50%, -50%);
-  background-image:url("images/canvas_background.png");
+  background-image: url("images/canvas_background.png");
   background-repeat: no-repeat;
-  background-size:contain;
-  height:700px;;
-  width:950px;
-  background-position:center center;
+  background-size: contain;
+  height: 700px;
+  width: 950px;
+  background-position: center center;
   color: black;
   padding: 10px;
   z-index: 1; /* Ensure the overlay appears above other elements */
@@ -338,9 +338,8 @@ padding:5px;
   align-items: center;
   font-family: "Pirata One", cursive;
   width: inherit;
-  width:70%;
+  width: 70%;
   font-size: 1.5rem;
-  
 }
 
 .modal button {
@@ -350,23 +349,30 @@ padding:5px;
   cursor: pointer;
   position: inherit;
   display: flex;
-  right:140px;
-  top:110px;
+  right: 140px;
+  top: 110px;
   cursor: pointer;
   align-items: center;
-  font-size:2rem;
+  font-size: 2rem;
   color: black;
   font-family: "Pirata One", cursive;
-  background-color:transparent;
+  background-color: transparent;
 }
-#shipButtons{
-  position:fixed;
-  bottom:30px;
-  display:flex;
-  justify-content:space-evenly;
+#shipButtons {
+  position: fixed;
+  bottom: 30px;
+  display: flex;
+  justify-content: space-evenly;
   align-items: center;
   flex-direction: row;
   width: 400px;
-  cursor:pointer;
-  
+  cursor: pointer;
+}
+#gameContent h2 {
+  font-size: 3rem;
+  color: white;
+  -webkit-text-stroke-width: 1px;
+  -webkit-text-stroke-color: black;
+  font-family: "Pirata One", cursive;
+  text-align: center;
 }

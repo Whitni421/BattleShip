@@ -17,7 +17,7 @@ Vue.createApp({
       backgroundAudio: new Audio("/sound/background.mp3"), // Replace with the path to your audio file
       isAudioPlaying: false,
       musicToggle: false,
-      audioVolume: 0.01,
+      audioVolume: 0.05,
       UserChat: [],
       UserInput: "",
       player: "",
@@ -26,11 +26,30 @@ Vue.createApp({
       gameObj: 0,
       GameOver: false,
       settingShips: true,
-      opponents_board: [],
+      game_Object: {},
+      updated: false,
       status: "Place Your Ships",
+      displayBoard: ["player1", [], ""],
     };
   },
   mounted() {
+    document.addEventListener("keydown", (e) => {
+      console.log(e);
+      if (e.key == "r") {
+        const draggingShip = this.gameObj.player.ships.find(
+          (ship) => ship.isDragging
+        );
+
+        // If a dragging ship is found, toggle its rotation
+        if (draggingShip) {
+          draggingShip.changeXY();jhkfl;
+          draggingShip.rotation = !draggingShip.rotation;
+          this.gameObj.player.insertShips(); // Update the board with the new location after rotation change
+          this.gameObj.player.draw(); // Redraw the ships
+          this.gameObj.drawGrid(); // Redraw the grid
+        }
+      }
+    });
     // Start playing the audio when the Vue instance is mounted
     if (this.page === 3) {
       this.loadCanvas();
@@ -60,6 +79,8 @@ Vue.createApp({
       window.onresize = function () {
         game.render();
       };
+
+      canvas.addEventListener("click", this.handleCanvasClick);
 
       class Game {
         constructor() {
@@ -178,7 +199,13 @@ Vue.createApp({
             this.game.width - 90,
             this.game.height - 360,
             90,
-            260
+            260,
+            67,
+            541,
+            194,
+            71,
+            260,
+            90
           );
           this.ships.push(ship5);
 
@@ -192,7 +219,13 @@ Vue.createApp({
             this.game.width - 170,
             this.game.height - 360,
             100,
-            205
+            205,
+            67,
+            387,
+            157,
+            75,
+            205,
+            100
           );
           this.ships.push(ship4);
 
@@ -206,7 +239,13 @@ Vue.createApp({
             this.game.width - 250,
             this.game.height - 360,
             100,
-            205
+            205,
+            67,
+            387,
+            157,
+            75,
+            205,
+            100
           );
           this.ships.push(ship4_2);
 
@@ -240,7 +279,13 @@ Vue.createApp({
             this.game.width - 90,
             0,
             100,
-            170
+            170,
+            50,
+            623,
+            134,
+            58,
+            170,
+            100
           );
           this.ships.push(ship3_2);
 
@@ -324,6 +369,18 @@ Vue.createApp({
             }
           }
         }
+        allSet() {
+          for (let ship of this.ships) {
+            if (!ship.set) return false;
+          }
+          return true;
+        }
+
+        setAllShips() {
+          for (let ship of this.ships) {
+            ship.allSet = true;
+          }
+        }
       }
 
       class Ship {
@@ -337,18 +394,18 @@ Vue.createApp({
           x,
           y,
           width,
-          height
+          height,
+          spriteXR,
+          spriteYR,
+          spriteWidthR,
+          spriteHeightR,
+          widthR,
+          heightR
         ) {
           //spriteX spriteY spriteWidth spriteHeight x y width height spriteXR SPRITEYR SPRITEWIDTHR SPRITEHEIGHTR WidthR HeightR
           this.player = player;
           this.rotation = false;
-          this.location = [
-            [0, 0],
-            [1, 0],
-            [2, 0],
-            [3, 0],
-            [4, 0],
-          ];
+          this.location = [];
           this.sunk = false;
           this.type = type;
           this.image = document.getElementById("ship");
@@ -361,16 +418,18 @@ Vue.createApp({
           this.y = y;
           this.width = width;
           this.height = height;
-          this.spriteXR = XR;
-          this.spriteYR = YR;
-          this.spriteWidthR = WidthR;
-          this.spriteHeightR = HeightR;
-          this.widthR = WidthR;
-          this.heightR = HeightR;
+          this.spriteXR = spriteXR;
+          this.spriteYR = spriteYR;
+          this.spriteWidthR = spriteWidthR;
+          this.spriteHeightR = spriteHeightR;
+          this.widthR = widthR;
+          this.heightR = heightR;
           this.mX = x;
           this.mY = y;
           this.row;
           this.col;
+          this.set = false;
+          this.allSet = false;
           this.isDragging = false;
           this.startX = 0;
           this.startY = 0;
@@ -380,14 +439,30 @@ Vue.createApp({
         }
 
         resetShip() {
-          this.x = this.mX;
-          this.y = this.mY;
-          this.player.insertShips();
-          this.draw();
-          this.player.game.drawGrid();
+          if (!this.allSet) {
+            this.rotation = false;
+            this.x = this.mX;
+            this.y = this.mY;
+            this.player.insertShips();
+            this.draw();
+            this.player.game.drawGrid();
+          }
         }
+
+        changeXY() {
+          const rect = canvas.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const y = e.clientY - rect.top;
+          if (this.rotation) {
+            this.x = x;
+          } else {
+            this.y = y;
+          }
+        }
+
         // Handle drag and drop for ships
         handleMouseDown(e) {
+          if (this.allSet) return;
           const rect = canvas.getBoundingClientRect();
           const x = e.clientX - rect.left;
           const y = e.clientY - rect.top;
@@ -396,18 +471,28 @@ Vue.createApp({
             x < this.x + this.width &&
             y >= this.y &&
             y < this.y + this.height
-          ) {
-            this.y = y;
-            this.isDragging = true;
-            this.startX = x - this.x;
-            this.startY = y - this.y;
-            this.player.draw();
-            this.draw();
-            return;
-          }
+          )
+            if (this.rotation) {
+              this.x = x;
+              this.isDragging = true;
+              this.startX = x - this.x;
+              this.startY = y - this.y;
+              this.player.draw();
+              this.draw();
+              return;
+            } else {
+              this.y = y;
+              this.isDragging = true;
+              this.startX = x - this.x;
+              this.startY = y - this.y;
+              this.player.draw();
+              this.draw();
+              return;
+            }
         }
 
         handleMouseMove(e) {
+          if (this.allSet) return;
           const rect = canvas.getBoundingClientRect();
           const x = e.clientX - rect.left;
           const y = e.clientY - rect.top;
@@ -420,6 +505,7 @@ Vue.createApp({
         }
 
         handleMouseUp(e) {
+          if (this.allSet) return;
           if (this.isDragging) {
             this.isDragging = false;
             const rect = canvas.getBoundingClientRect();
@@ -438,8 +524,10 @@ Vue.createApp({
                 if (gridX + this.type <= this.player.game.gridSize) {
                   this.x =
                     gridX * this.player.game.cellSize -
-                    this.player.game.cellSize / 3;
-                  this.y = gridY * this.player.game.cellSize;
+                    this.player.game.cellSize;
+                  this.y =
+                    gridY * this.player.game.cellSize -
+                    this.player.game.cellSize / 2;
 
                   this.row = gridY;
                   this.col = gridX;
@@ -447,10 +535,11 @@ Vue.createApp({
                   // Update the board with the new location
                   this.player.insertShips();
 
-                  this.changed = true;
+                  this.set = true;
                   this.player.game.drawGrid();
                   this.draw();
                 } else {
+                  this.set = false;
                   this.resetShip();
                   this.player.game.drawGrid();
                   this.draw();
@@ -468,15 +557,17 @@ Vue.createApp({
                   // Update the board with the new location
                   this.player.insertShips();
 
-                  this.changed = true;
+                  this.set = true;
                   this.player.game.drawGrid();
                   this.draw();
                 } else {
+                  this.set = false;
                   this.resetShip();
                   this.player.game.drawGrid();
                   this.draw();
                 }
               } else {
+                this.set = false;
                 this.resetShip();
                 this.player.game.drawGrid();
                 this.draw();
@@ -489,7 +580,17 @@ Vue.createApp({
         draw() {
           //spriteX spriteY spriteWidth spriteHeight x y width height
           if (this.rotation) {
-            ctx.drawImage(this.imageR);
+            ctx.drawImage(
+              this.imageR,
+              this.spriteXR,
+              this.spriteYR,
+              this.spriteWidthR,
+              this.spriteHeightR,
+              this.x,
+              this.y,
+              this.widthR,
+              this.heightR
+            );
           } else {
             ctx.drawImage(
               this.image,
@@ -517,6 +618,7 @@ Vue.createApp({
         this.gameObj.player.ships[i].resetShip();
       }
     },
+
     modalClose: function () {
       this.modal = false;
     },
@@ -524,22 +626,6 @@ Vue.createApp({
       var h3 = document.createElement("h3");
       h3.classList.add(".modal");
       this.modal = true;
-    },
-    handleKeyDown(e) {
-      // Check if the "r" key is pressed (key code: 82)
-      if (e.keyCode === 82) {
-        console.log(e);
-        // Get the currently dragging ship
-        const draggingShip = this.gameObj.player.ships.find(
-          (ship) => ship.isDragging
-        );
-        console.log("rotating");
-
-        // If a dragging ship is found, toggle its rotation
-        if (draggingShip) {
-          draggingShip.rotation = !draggingShip.rotation;
-        }
-      }
     },
     connect: function () {
       // 1: Connect to websocket
@@ -556,12 +642,19 @@ Vue.createApp({
         if (msg.EventType == "initialize") {
           console.log("success");
           console.log(msg.Data);
+          this.game_Object = msg.Data;
           this.page = 3;
           this.loadCanvas();
           // call loadCanvas here!!
           this.player = msg.Data.player;
           this.GameIndex = msg.Data.index;
+          this.displayBoard[1] = this.game_Object.player2.board;
+
           console.log(this.player);
+        }
+        if (msg.EventType == "Kraken") {
+          console.log(msg.Data);
+          this.Kraken(msg.Data.cords);
         }
         if (msg.EventType == "playerDisconnect") {
           console.log("Player disconnected");
@@ -574,25 +667,58 @@ Vue.createApp({
           const chatLogContainer = this.$refs.chatLogContainer;
           chatLogContainer.scrollTop = chatLogContainer.scrollHeight;
         }
-        // if (this.player_turn == 1) {
-        //   console.log("Player2 made attack");
-        //   this.Attack(index);
-        //   this.player_turn = 0;
-        //   console.log(this.player_turn);
-        // }
+        if (msg.EventType == "AttackMiss") {
+          cords = msg.Data.cords;
+          this.Attack(cords);
+          var location = msg.Data.board[coordinates[0]][coordinates[1]];
+          location.classList.add(".miss");
+        }
+        if (msg.EventType == "AttackHit") {
+          cords = msg.Data.cords;
+          this.Attack(cords);
+          var location = msg.Data.board[coordinates[0]][coordinates[1]];
+          location.classList.add(".hit");
+        }
+
+        if (this.player_turn == 1) {
+          console.log("Player2 made attack");
+          this.Attack(index);
+          this.player_turn = 0;
+          console.log(this.player_turn);
+        }
         // if (this.player_turn == 0) {
         //   console.log("Player2 made attack");
         //   this.Attack(index);
         //   this.player_turn = 1;
         //   console.log(this.player_turn);
         // }
-        if (msg.EventType == "updateBoard") {
-          this.player = msg.Data.player1;
+        if (msg.EventType == "updateBoards") {
           this.gameObj.player.board = msg.Data.board;
-          opponents_board = msg.Data.player2.board;
+          this.game_Object = msg.Data;
+          this.updated = true;
           console.log(msg.Data.player1);
+          if (this.player == "player1") {
+            this.status = "Attack";
+            this.displayBoard[2] = this.game_Object.player1.name;
+            this.displayBoard[1] = this.game_Object.player1.board;
+          } else {
+            this.status = "Waiting for opponents turn";
+            this.displayBoard[2] = this.game_Object.player2.name;
+            this.displayBoard[1] = this.game_Object.player1.board;
+          }
         }
       };
+    },
+
+    Kraken: function (coordinates) {
+      this.socket.send(
+        JSON.stringify({
+          EventType: "Kraken",
+          Data: {
+            cord: coordinates,
+          },
+        })
+      );
     },
     checkWin: function () {
       for (ship in gameObj.player.ships) {
@@ -642,17 +768,70 @@ Vue.createApp({
       }
     },
     updateBoard: function () {
-      this.settingShips = false;
-      this.socket.send(
-        JSON.stringify({
-          EventType: "UpdateBoard",
-          Data: {
-            board: this.gameObj.player.board,
-            player: this.player,
-            index: this.GameIndex,
-          },
-        })
-      );
+      if (this.gameObj.player.allSet() == true) {
+        this.settingShips = false;
+        this.gameObj.player.setAllShips();
+        this.status = "Waiting for other player";
+        this.socket.send(
+          JSON.stringify({
+            EventType: "UpdateBoard",
+            Data: {
+              board: this.gameObj.player.board,
+              player: this.player,
+              index: this.GameIndex,
+            },
+          })
+        );
+      } else {
+        this.status = "Place all ships";
+        console.log("not all ships are placed");
+      }
+
+    // Attack(coordinates) {
+    //   canvas.addEventListener("mousedown", (e) => {
+    //     this.socket.send(
+    //       JSON.stringify({
+    //         EventType: "Attack",
+    //         Data: {
+    //           board: this.gameObj.player.board,
+    //           attack: coordinates,
+    //           player: this.player,
+    //           index: this.GameIndex,
+    //         },
+    //       })
+    //     );
+    //   });
+    // },
+
+    methods: {
+      // ... (existing methods
+      handleCanvasClick(event) {
+        const rect = canvas.getBoundingClientRect();
+        const mouseX = event.clientX - rect.left;
+        const mouseY = event.clientY - rect.top;
+    
+        // Calculate the grid cell index based on the mouse coordinates
+        const gridX = Math.floor(mouseX / this.gameObj.player.game.cellSize);
+        const gridY = Math.floor(mouseY / this.gameObj.player.game.cellSize);
+    
+        // Send the grid cell index to the server via WebSocket
+        this.Attack(gridX, gridY);
+      },
+    
+      Attack(row, col) {
+        // Send the attack coordinates to the server
+        this.socket.send(
+          JSON.stringify({
+            EventType: "Attack",
+            Data: {
+              board: this.gameObj.player.board,
+              attack: [row, col],
+              player: this.player,
+              index: this.GameIndex,
+            },
+          })
+        );
+      }
     },
     toggleAudio() {
       this.backgroundAudio.loop = true;
@@ -662,6 +841,17 @@ Vue.createApp({
         this.playAudio();
       } else {
         this.pauseAudio();
+      }
+    },
+    toggleBoard() {
+      if (this.displayBoard[0] == "player1") {
+        this.displayBoard[0] = "player2";
+        this.displayBoard[1] = this.game_Object.player2.board;
+        this.displayBoard[2] = this.game_Object.player2.name;
+      } else if (this.displayBoard[0] == "player2") {
+        this.displayBoard[0] = "player1";
+        this.displayBoard[1] = this.game_Object.player1.board;
+        this.displayBoard[2] = this.game_Object.player1.name;
       }
     },
     playAudio() {

@@ -22,7 +22,7 @@ class Game {
       name: player1[1],
       id: player1[0],
       index: varindex,
-      updated: true,
+      updated: false,
       board: [
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -162,6 +162,7 @@ function addPlayer(player, id) {
       indexvar = playingGames.length;
     }
     playingGames.push(new Game(openGames[0], openGames[1], indexvar));
+    console.log(playingGames);
     openGames.shift();
     openGames.shift();
     playingGames[indexvar].player1.id.send(
@@ -277,25 +278,25 @@ function checkWin(game) {
 
 //updates boards after player creates them
 function updateBoard(data) {
+  console.log(data);
   var index = data.index;
   game = playingGames[index];
   //updates player ones board when created
   if (data.player == "player1") {
-    playingGames[index].player1.board = data.board;
-    playingGames[index].player1.updated = true;
+    game.player1.board = data.board;
+    game.player1.updated = true;
     console.log("Player 1 board updated:", playingGames[index].player1.board);
   }
   //updates player twos board on server when created
   if (data.player == "player2") {
-    playingGames[index].player2.board = data.board;
-    playingGames[index].player2.updated = true;
+    game.player2.board = data.board;
+    game.player2.updated = true;
     console.log("Player 2 board updated:", playingGames[index].player2.board);
   }
   //once both players create a board it sends the boards back to players
-  if (
-    playingGames[index].player1.updated &&
-    playingGames[index].player2.updated
-  ) {
+  console.log(playingGames[index].player1.updated);
+  console.log(playingGames[index].player2.updated);
+  if (game.player1.updated && playingGames[index].player2.updated) {
     sendData("updateBoards", index);
   }
 }

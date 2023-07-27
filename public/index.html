@@ -5,8 +5,11 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link href="style.css" rel="stylesheet" type="text/css" />
-    <link rel="shortcut icon" href="#">
-    <script src="https://kit.fontawesome.com/aeb49ce674.js" crossorigin="anonymous"></script>
+    <link rel="shortcut icon" href="#" />
+    <script
+      src="https://kit.fontawesome.com/aeb49ce674.js"
+      crossorigin="anonymous"
+    ></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <title>Document</title>
   </head>
@@ -14,26 +17,42 @@
     <div id="app">
       <div id="toggleAudio" @click="toggleAudio()">
         <span>
-          <i class="fa-solid fa-volume-off fa-2xl fa-rotate-180" v-if="!isAudioPlaying"></i>
+          <i
+            class="fa-solid fa-volume-off fa-2xl fa-rotate-180"
+            v-if="!isAudioPlaying"
+          ></i>
         </span>
         <span>
-          <i class="fa-solid fa-volume-low fa-2xl fa-rotate-180" v-if="isAudioPlaying"></i>
+          <i
+            class="fa-solid fa-volume-low fa-2xl fa-rotate-180"
+            v-if="isAudioPlaying"
+          ></i>
         </span>
-      </h3>
       </div>
-      <audio v-if="musicToggle" id="backgroundAudio" loop autoplay >
-        <source src="sound/background.mp3" type="audio/mpeg">
+      <audio v-if="musicToggle" id="backgroundAudio" loop autoplay>
+        <source src="sound/background.mp3" type="audio/mpeg" />
         Your browser does not support the audio element.
       </audio>
       <div id="page1" v-if="page==1">
         <div class="modal" v-show="modal">
           <button @click="modalClose">X</button>
-          <h3>Instructions:<br><br>Ahoy, me hearties! Prepare to embark on a daring pirate-themed battleship game where ye aim to be the last pirate standing! Each player secretly places their ships on a 10x10 grid and takes turns calling out coordinates to attack their opponent's ships. Mark yer hits and misses on the "Opponent's Grid," and sink their ships to Davy Jones' locker! The swashbucklin' pirate with ships still afloat shall be crowned the Pirate Captain and claim victory! May the winds of fortune favor the boldest and most cunning pirate. Yo ho ho, and a bottle of rum!</h3>
+          <h3>
+            Instructions:<br /><br />Ahoy, me hearties! Prepare to embark on a
+            daring pirate-themed battleship game where ye aim to be the last
+            pirate standing! Each player secretly places their ships on a 10x10
+            grid and takes turns calling out coordinates to attack their
+            opponent's ships. Mark yer hits and misses on the "Opponent's Grid,"
+            and sink their ships to Davy Jones' locker! The swashbucklin' pirate
+            with ships still afloat shall be crowned the Pirate Captain and
+            claim victory! May the winds of fortune favor the boldest and most
+            cunning pirate. Yo ho ho, and a bottle of rum!
+          </h3>
         </div>
         <div class="logo"></div>
         <div id="login">
-          
-          <h2>Choose <span v-if="userRequired">Valid</span><br>Display Name</h2>
+          <h2>
+            Choose <span v-if="userRequired">Valid</span><br />Display Name
+          </h2>
           <input
             id="username_bar"
             type="text"
@@ -51,43 +70,61 @@
         <div class="logo"></div>
         <div id="loadscreen">
           <div id="loading">
-            <h3>
-              Waiting For Player
-            </h3>
+            <h3>Waiting For Player</h3>
           </div>
-          <div id="loadingwheel">
-          </div>
-        
+          <div id="loadingwheel"></div>
         </div>
-        
-        
       </div>
-      <div id="page3" v-show="page==3" >
+      <div id="page3" v-show="page==3">
         <div id="gameContent" ref="gameContent">
-          <h3>{{status}}</h3>
+          <h2>
+            {{status}} <br />
+            <span v-if="updated">{{displayBoard[2]}}'s board</span>
+          </h2>
           <img src="images/ships.png" alt="ships" id="ship" />
           <img src="images/shipsR.png" alt="ships" id="shipR" />
           <canvas id="canvas"></canvas>
           <div id="shipButtons">
-        <button v-if="settingShips" @click="updateBoard()" id="PlaceShipsButton">Confirm Ships</button>
-        <button v-if="settingShips" id="resetShips" @click="resetShips()">Reset</button>
-      </div>
-        <!-- <button @click="resetShips()">Reset</button> -->
-        <div id="liveChat">
-          <div id="ChatLog" ref="chatLogContainer">
-            <h3 v-for="chat in UserChat">{{chat}}</h3>
+            <button
+              v-if="settingShips"
+              @click="updateBoard()"
+              id="PlaceShipsButton"
+            >
+              Confirm Ships
+            </button>
+            <button v-if="settingShips" id="resetShips" @click="resetShips()">
+              Reset
+            </button>
+            <button
+              v-if="!settingShips"
+              id="ToggleBoard"
+              @click="toggleBoard()"
+            >
+              Toggle Boards
+            </button>
           </div>
-          <input type="Text" placeholder="Enter Text" v-model="UserInput"  @keyup.enter="sendChat()" required>
-          <button id="chatButton" @click="sendChat()">Enter</button>
-          
+          <!-- <button @click="resetShips()">Reset</button> -->
+          <div id="liveChat">
+            <div id="ChatLog" ref="chatLogContainer">
+              <h3 v-for="chat in UserChat">{{chat}}</h3>
+            </div>
+            <input
+              type="Text"
+              placeholder="Enter Text"
+              v-model="UserInput"
+              @keyup.enter="sendChat()"
+              required
+            />
+            <button id="chatButton" @click="sendChat()">Enter</button>
           </div>
-        </div>        
+        </div>
       </div>
       <div id="page4" v-if="page=='4'">
         <div id="loseimage"></div>
-        <h3>Other player has disconnected </h3>
-        <button id="playAgain" onClick="window.location.reload();">Back To Menu</button>
-
+        <h3>Other player has disconnected</h3>
+        <button id="playAgain" onClick="window.location.reload();">
+          Back To Menu
+        </button>
       </div>
       <!-- <div id="page4 page" v-if="page == 'page4'">
         <div id="player1-board">
