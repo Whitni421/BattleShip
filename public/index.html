@@ -11,7 +11,7 @@
       crossorigin="anonymous"
     ></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-    <title>Document</title>
+    <title>RogueWaves</title>
   </head>
   <body>
     <div id="app">
@@ -77,10 +77,10 @@
       </div>
       <div id="page3" v-show="page==3">
         <div id="gameContent" ref="gameContent">
-          <h2>
-            {{status}} <br />
-            <span v-if="updated">{{displayBoard[2]}}'s board</span>
-          </h2>
+          <div id="gameText">
+            <h2 id="statusText">{{status}}</h2>
+            <h2 v-if="updated">{{displayBoard[2]}} board</h2>
+          </div>
           <img src="images/ships.png" alt="ships" id="ship" />
           <img src="images/shipsR.png" alt="ships" id="shipR" />
           <canvas id="canvas"></canvas>

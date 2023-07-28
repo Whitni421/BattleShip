@@ -31,12 +31,12 @@ Vue.createApp({
       updated: false,
       status: "Place Your Ships",
       displayBoard: [this.player, [], "", true],
+      cords: [],
     };
   },
   mounted() {
     this.canvas = document.getElementById("canvas");
     document.addEventListener("keydown", (e) => {
-      console.log(e);
       if (e.key == "r") {
         const draggingShip = this.gameObj.player.ships.find(
           (ship) => ship.isDragging
@@ -47,27 +47,30 @@ Vue.createApp({
           draggingShip.changeXY(e);
           draggingShip.rotation = !draggingShip.rotation;
           this.gameObj.player.insertShips(); // Update the board with the new location after rotation change
-          this.gameObj.player.draw(); // Redraw the ships
-          this.gameObj.drawGrid(0); // Redraw the grid
+          this.gameObj.drawGrid(); // Redraw the grid
+          this.gameObj.player.draw();
         }
       }
-
-      document.addEventListener("mouseup", (e) => {
-        if (
-          this.game_Object.turn == this.player &&
-          this.updated &&
-          this.player != this.displayBoard[0]
-        ) {
-          this.attack(e);
-        }
-      });
     });
+
+    document.addEventListener("mouseup", (e) => {
+      if (
+        this.game_Object.turn == this.player &&
+        this.updated &&
+        this.player != this.displayBoard[0]
+      ) {
+        this.attack(e);
+      }
+    });
+
     // Start playing the audio when the Vue instance is mounted
     if (this.page === 3) {
       this.loadCanvas();
     }
   },
   methods: {
+    // Add this method inside the Vue component
+
     GameOver: function () {
       if (GameOver == true && player_turn == 1) {
       }
@@ -98,7 +101,9 @@ Vue.createApp({
           this.canvas = canvas;
           this.width = canvas.width;
           this.height = canvas.height;
+          this.displayBoard = displayBoard;
           this.topMargin = 260;
+          this.winner = null;
           this.debug = true;
           this.player = new Player(this, game_Object, displayBoard);
           this.mouse = {
@@ -124,6 +129,61 @@ Vue.createApp({
                 this.cellSize
               );
               ctx.stroke();
+
+              // Draw the player's board
+              // 1 = miss(yellow), 2 = revealed(orange), 3 = hit(red), 4 = sunk(dark red)
+              var board = [
+                [1, 0, 0, 2, 0, 0, 0, 0, 0, 0],
+                [1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [1, 0, 0, 2, 0, 0, 0, 0, 0, 0],
+                [1, 0, 0, 0, 2, 0, 0, 0, 0, 0],
+                [1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [1, 0, 0, 0, 3, 3, 3, 0, 0, 0],
+                [1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [1, 0, 4, 4, 4, 4, 0, 0, 0, 0],
+                [1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+              ];
+              if (!this.displayBoard[3]) {
+                const cellStatus = this.displayBoard[1][row][col];
+                if (cellStatus === 1) {
+                  // Miss (yellow)
+                  ctx.fillStyle = "yellow";
+                  ctx.fillRect(
+                    col * this.cellSize,
+                    row * this.cellSize,
+                    this.cellSize,
+                    this.cellSize
+                  );
+                } else if (cellStatus === 2) {
+                  // Revealed (orange)
+                  ctx.fillStyle = "orange";
+                  ctx.fillRect(
+                    col * this.cellSize,
+                    row * this.cellSize,
+                    this.cellSize,
+                    this.cellSize
+                  );
+                } else if (cellStatus === 3) {
+                  // Hit (red)
+                  ctx.fillStyle = "red";
+                  ctx.fillRect(
+                    col * this.cellSize,
+                    row * this.cellSize,
+                    this.cellSize,
+                    this.cellSize
+                  );
+                } else if (cellStatus === 4) {
+                  // Sunk (dark red)
+                  ctx.fillStyle = "darkred";
+                  ctx.fillRect(
+                    col * this.cellSize,
+                    row * this.cellSize,
+                    this.cellSize,
+                    this.cellSize
+                  );
+                }
+              }
             }
           }
         };
@@ -133,7 +193,6 @@ Vue.createApp({
           this.gridLines();
           this.player.draw();
 
-          // Highlight the cell on mouse hover
           canvas.addEventListener("mousemove", (e) => {
             const rect = canvas.getBoundingClientRect();
             const x = e.clientX - rect.left;
@@ -489,22 +548,29 @@ Vue.createApp({
           const rect = canvas.getBoundingClientRect();
           const x = e.clientX - rect.left;
           const y = e.clientY - rect.top;
-          if (
-            x >= this.x &&
-            x < this.x + this.width &&
-            y >= this.y &&
-            y < this.y + this.height
-          )
-            if (this.rotation) {
+          if (this.rotation) {
+            if (
+              x >= this.x &&
+              x < this.x + this.widthR &&
+              y >= this.y &&
+              y < this.y + this.heightR
+            ) {
               this.x = x;
-              this.y = y - this.height / 2;
+              this.y = y - this.heightR / 2;
               this.isDragging = true;
               this.startX = x - this.x;
               this.startY = y - this.y;
               this.player.draw();
               this.draw();
               return;
-            } else {
+            }
+          } else {
+            if (
+              x >= this.x &&
+              x < this.x + this.width &&
+              y >= this.y &&
+              y < this.y + this.height
+            ) {
               this.y = y;
               this.x = x - this.width / 2;
               this.isDragging = true;
@@ -514,6 +580,7 @@ Vue.createApp({
               this.draw();
               return;
             }
+          }
         }
 
         handleMouseMove(e) {
@@ -548,13 +615,10 @@ Vue.createApp({
             ) {
               if (this.rotation) {
                 if (gridX + this.type <= this.player.game.gridSize) {
-                  this.x =
-                    gridX * this.player.game.cellSize -
-                    this.player.game.cellSize;
+                  this.x = gridX * this.player.game.cellSize;
                   this.y =
                     gridY * this.player.game.cellSize -
                     this.player.game.cellSize / 2;
-
                   this.row = gridY;
                   this.col = gridX;
 
@@ -694,34 +758,10 @@ Vue.createApp({
           chatLogContainer.scrollTop = chatLogContainer.scrollHeight;
         }
         if (msg.EventType == "AttackMiss") {
-          this.cords = msg.Data.cords;
-          this.game_Object = msg.Data;
-          if (this.turn == "player1") {
-            this.status =
-              game_Object.player1.name +
-              "missed at " +
-              JSON.stringify(game_Object.cords);
-          } else if (this.game_Object.turn == "player2") {
-            this.status =
-              game_Object.player2.name +
-              "missed at " +
-              JSON.stringify(game_Object.cords);
-          }
+          this.attackMiss(msg);
         }
         if (msg.EventType == "AttackHit") {
-          this.cords = msg.Data.cords;
-          this.game_Object = msg.Data;
-          if (this.game_Object.turn == "player1") {
-            this.status =
-              game_Object.player2.name +
-              "Hit at " +
-              JSON.stringify(game_Object.cords);
-          } else if (this.game_Object.turn == "player1") {
-            this.status =
-              game_Object.player1.name +
-              "missed at " +
-              JSON.stringify(game_Object.cords);
-          }
+          this.attackHit(msg);
         }
 
         if (this.game_Object.turn == 1) {
@@ -756,6 +796,58 @@ Vue.createApp({
         }
       };
     },
+    attackMiss: function (msg) {
+      this.cords = msg.Data.cords;
+      this.game_Object = msg.Data;
+      console.log("success");
+      if (this.game_Object.turn == "player1") {
+        console.log("test");
+        this.status =
+          this.game_Object.player2.name + " missed at " + this.cords;
+      } else {
+        this.status =
+          this.game_Object.player1.name + " missed at " + this.cords;
+        console.log(this.status);
+      }
+      setTimeout(this.nextAttack(msg.Data), 15000);
+    },
+    attackHit: function (msg) {
+      this.cords = msg.Data.cords;
+      this.game_Object = msg.Data;
+      if (this.game_Object.turn == "player1") {
+        this.status = this.game_Object.player2.name + "Hit at " + this.cords;
+      } else {
+        this.status = this.game_Object.player1.name + "Hit at " + this.cords;
+      }
+      setTimeout(this.nextAttack(msg.Data), 5000);
+    },
+    nextAttack: function (obj) {
+      if (obj.turn == this.game_Object.player) {
+        this.status = "Attack";
+        if (this.displayBoard[0] == this.game_Object.player) {
+          this.toggleBoard();
+          //   this.displayBoard[0] = "player2";
+          //   this.displayBoard[2] = obj.player2.name;
+          //   this.displayBoard[1] = this.game_Object.player2.board;
+          // } else {
+          //   this.displayBoard[0] = "player1";
+          //   this.displayBoard[2] = obj.player1.name;
+          //   this.displayBoard[1] = this.game_Object.player1.board;
+        }
+      } else {
+        this.status = "Waiting for opponents turn";
+        if (this.displayBoard[0] != this.game_Object.player) {
+          this.toggleBoard();
+          //   this.displayBoard[0] = "player1";
+          //   this.displayBoard[2] = obj.player1.name;
+          //   this.displayBoard[1] = this.game_Object.player1.board;
+          // } else {
+          //   this.displayBoard[0] = "player2";
+          //   this.displayBoard[2] = obj.player2.name;
+          //   this.displayBoard[1] = this.game_Object.player2.board;
+        }
+      }
+    },
     Kraken: function (coordinates) {
       this.socket.send(
         JSON.stringify({
@@ -777,25 +869,6 @@ Vue.createApp({
     //   }
     // },
 
-    checkSunk() {
-      for (let ship of this.ships) {
-        let isSunk = true;
-        for (let location of ship.location) {
-          const [row, col] = location;
-          if (this.board[row][col] !== 3) {
-            isSunk = false;
-            break;
-          }
-        }
-
-        if (isSunk) {
-          for (let location of ship.location) {
-            const [row, col] = location;
-            this.board[row][col] = 4; // Mark the location as "sunk" (value 4)
-          }
-        }
-      }
-    },
     load_screen: function () {
       // Send username through websocket
       if (this.username.trim() != "") {
@@ -848,14 +921,23 @@ Vue.createApp({
       }
     },
     toggleBoard() {
+      this.gameObj.render();
       if (this.displayBoard[0] == "player1") {
         this.displayBoard[0] = "player2";
         this.displayBoard[1] = this.game_Object.player2.board;
-        this.displayBoard[2] = this.game_Object.player2.name;
+        if (this.game_Object.player == "player2") {
+          this.displayBoard[2] = "Your";
+        } else {
+          this.displayBoard[2] = this.game_Object.player2.name + "'s";
+        }
       } else if (this.displayBoard[0] == "player2") {
         this.displayBoard[0] = "player1";
         this.displayBoard[1] = this.game_Object.player1.board;
-        this.displayBoard[2] = this.game_Object.player1.name;
+        if (this.game_Object.player == "player1") {
+          this.displayBoard[2] = "Your";
+        } else {
+          this.displayBoard[2] = this.game_Object.player1.name + "'s";
+        }
       }
     },
     playAudio() {
@@ -904,7 +986,7 @@ Vue.createApp({
         row < this.gameObj.gridSize
       ) {
         console.log(col, row);
-        var attackCords = [col, row];
+        var attackCords = [row, col];
         this.socket.send(
           JSON.stringify({
             EventType: "attack",

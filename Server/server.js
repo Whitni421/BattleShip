@@ -236,12 +236,14 @@ function attackFunction(data) {
       changeTurn(data.index);
       playingGames[data.index].cords = data.cords;
       console.log("hit" + data.cords);
+      console.log(data);
       sendData("AttackHit", data.index);
     } else if (game.player2.board[data.cords[0]][data.cords[1]] == 0) {
       game.player2.board[data.cords[0]][data.cords[1]] = 1;
       playingGames[data.index].cords = data.cords;
       changeTurn(data.index);
       console.log("miss" + data.cords);
+      console.log(data);
       sendData("AttackMiss", data.index);
     }
   }
@@ -250,10 +252,12 @@ function attackFunction(data) {
     //if there is a ship at location it changes it to attacked ship if not it changes it to miss
     if (game.player1.board[data.cords[0]][data.cords[1]] == 5) {
       game.player1.board[data.cords[0]][data.cords[1]] = 3;
+      playingGames[data.index].cords = data.cords;
       changeTurn(data.index);
       sendData("AttackHit", data.index);
     } else if (game.player1.board[data.cords[0]][data.cords[1]] == 0) {
       game.player1.board[data.cords[0]][data.cords[1]] = 1;
+      playingGames[data.index].cords = data.cords;
       changeTurn(data.index);
       sendData("AttackMiss", data.index);
     }
