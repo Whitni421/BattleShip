@@ -2,7 +2,7 @@ const express = require("express");
 const cors = require("cors");
 
 // 1: Require web sockets
-const WebSocket = require("wss");
+const WebSocket = require("ws");
 
 const app = express();
 const port = process.env.PORT || 8080;
