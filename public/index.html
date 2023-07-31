@@ -60,6 +60,19 @@
             v-model="username"
             @keyup.enter="load_screen()"
           />
+          <div id="gameCodes">
+            <label for="codeGameBox">{{codeStatus}}Use Join Code</label>
+            <input type="checkbox" id="codeGameBox" v-model="codeGameToggle" />
+            <input
+            id="code_bar"
+            type="text"
+            placeholder="Type Game Code..."
+            v-model="gameCode"
+            @keyup.enter="load_screen()"
+            v-if="codeGameToggle"
+          />
+          </div>
+          
           <button @click="load_screen()">Play</button>
         </div>
         <div id="QM" @click="modalOpen">

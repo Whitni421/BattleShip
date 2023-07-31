@@ -32,6 +32,8 @@ Vue.createApp({
       status: "Place Your Ships",
       displayBoard: [this.player, [], "", true],
       cords: [],
+      codeGameToggle: false,
+      gameCode: "",
     };
   },
   mounted() {
@@ -875,14 +877,25 @@ Vue.createApp({
         if (!this.isAudioPlaying) {
           this.toggleAudio();
         }
-        this.page = 2;
-        this.userRequired = false;
-        this.socket.send(
-          JSON.stringify({
-            EventType: "username",
-            Data: { user: this.username },
-          })
-        );
+        if (this.gameCode == "") {
+          this.page = 2;
+          this.userRequired = false;
+          this.socket.send(
+            JSON.stringify({
+              EventType: "username",
+              Data: { user: this.username },
+            })
+          );
+        } else {
+          this.page = 2;
+          this.userRequired = false;
+          this.socket.send(
+            JSON.stringify({
+              EventType: "usernameCode",
+              Data: { user: this.username, gameCode: this.gameCode },
+            })
+          );
+        }
       } else {
         this.userRequired = true;
       }

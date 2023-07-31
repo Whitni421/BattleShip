@@ -61,6 +61,7 @@ class Game {
 }
 const openGames = [];
 const playingGames = [];
+const codeGames = [];
 // 2: Assign name to server
 const server = app.listen(port, function () {
   console.log(`Running server on port ${port}...`);
@@ -91,6 +92,12 @@ wss.on("connection", function (ws) {
       // client.set(clientid, ws);
       addPlayer(username, clientId);
     }
+    if (msg.EventType == "usernameCode") {
+      var username = msg.Data.user;
+      const clientId = clients.get(ws);
+      // client.set(clientid, ws);
+      playerCode(username, clientId, msg.Data.code);
+    }
     if (msg.EventType == "attack") {
       attackFunction(msg.Data);
     }
@@ -115,6 +122,14 @@ wss.on("connection", function (ws) {
         );
         openGames.splice(gameIndex, 1);
       }
+      const codeIndex = codeGames.findIndex((game) => game[0] === clientId);
+      if (codeIndex !== -1) {
+        console.log(
+          codeGames[codeIndex][1] + " client disconnected from queue"
+        );
+        codeGames.splice(codeIndex, 1);
+      }
+
       // Find the game where the disconnected player was playing
       const game = playingGames.find(
         (game) => game.player1.id === clientId || game.player2.id === clientId
@@ -177,6 +192,41 @@ function addPlayer(player, id) {
         Data: prepareSend(playingGames[indexvar], "player2"),
       })
     );
+  }
+}
+function playerCode(player, id, code) {
+  //makes a tuple and adds it to the list of players looking for a game
+  codeGames.push([id, player, code]);
+  var indexvar = 0;
+  if (playingGames == undefined) {
+    indexvar = 0;
+  } else {
+    indexvar = playingGames.length;
+  }
+  if (codeGames.length > 1) {
+    for (let i = 0; i < codeGames.length; i++) {
+      if (codeGames[i][2] == code && codeGames[i][0] != id) {
+        playingGames.push(
+          new Game(codeGames[i], codeGames[codeGames.length - 1], indexvar)
+        );
+        codeGames.splice(i, 1);
+        codeGames.splice(codeGames.length - 1, 1);
+
+        console.log(playingGames);
+        playingGames[indexvar].player1.id.send(
+          JSON.stringify({
+            EventType: "initialize",
+            Data: prepareSend(playingGames[indexvar], "player1"),
+          })
+        );
+        playingGames[indexvar].player2.id.send(
+          JSON.stringify({
+            EventType: "initialize",
+            Data: prepareSend(playingGames[indexvar], "player2"),
+          })
+        );
+      }
+    }
   }
 }
 //prepares data to be sent
