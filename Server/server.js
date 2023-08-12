@@ -168,6 +168,7 @@ function broadcast(message) {
 
 function addPlayer(player, id) {
   //makes a tuple and adds it to the list of players looking for a game
+  console.log("adding player no code");
   openGames.push([id, player]);
   var indexvar = 0;
   if (openGames.length > 1) {
@@ -196,6 +197,7 @@ function addPlayer(player, id) {
 }
 function playerCode(player, id, code) {
   //makes a tuple and adds it to the list of players looking for a game
+  console.log("code game, code" + code);
   codeGames.push([id, player, code]);
   var indexvar = 0;
   if (playingGames == undefined) {
@@ -205,7 +207,7 @@ function playerCode(player, id, code) {
   }
   if (codeGames.length > 1) {
     for (let i = 0; i < codeGames.length; i++) {
-      if (codeGames[i][2] == code && codeGames[i][0] != id) {
+      if (codeGames[i][2] === code && codeGames[i][0] !== id) {
         playingGames.push(
           new Game(codeGames[i], codeGames[codeGames.length - 1], indexvar)
         );
@@ -287,7 +289,11 @@ function attackFunction(data) {
       playingGames[data.index].cords = data.cords;
       console.log("hit" + data.cords);
       console.log(data);
-      sendData("AttackHit", data.index);
+      if (checkWin(game.player2)) {
+        sendData("Win", data.index);
+      } else {
+        sendData("AttackHit", data.index);
+      }
     } else if (game.player2.board[data.cords[0]][data.cords[1]] == 0) {
       game.player2.board[data.cords[0]][data.cords[1]] = 1;
       playingGames[data.index].cords = data.cords;
@@ -304,7 +310,11 @@ function attackFunction(data) {
       game.player1.board[data.cords[0]][data.cords[1]] = 3;
       playingGames[data.index].cords = data.cords;
       changeTurn(data.index);
-      sendData("AttackHit", data.index);
+      if (checkWin(game.player1)) {
+        sendData("Win", data.index);
+      } else {
+        sendData("AttackHit", data.index);
+      }
     } else if (game.player1.board[data.cords[0]][data.cords[1]] == 0) {
       game.player1.board[data.cords[0]][data.cords[1]] = 1;
       playingGames[data.index].cords = data.cords;
@@ -391,4 +401,14 @@ function changeTurn(data) {
   } else {
     playingGames[data].turn = "player1";
   }
+}
+function checkWin(data) {
+  for (let i = 0; i < data.board.length; i++) {
+    for (let j = 0; j < data.board[i].length; j++) {
+      if (data.board[i][j] == 5 || data.board[i][j] == 2) {
+        return false;
+      }
+    }
+  }
+  return true;
 }

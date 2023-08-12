@@ -11,7 +11,7 @@ Vue.createApp({
     return {
       debug: true,
       canvas: 0,
-      page: 1,
+      page: 3,
       username: "",
       player_turn: 0,
       userRequired: false,
@@ -34,6 +34,7 @@ Vue.createApp({
       cords: [],
       codeGameToggle: false,
       gameCode: "",
+      win: false,
     };
   },
   mounted() {
@@ -515,9 +516,12 @@ Vue.createApp({
           this.isDragging = false;
           this.startX = 0;
           this.startY = 0;
+          this.shipStatus = false;
+          this.mouseDownTimeout;
+
           canvas.addEventListener("mousedown", this.handleMouseDown.bind(this));
-          canvas.addEventListener("mouseup", this.handleMouseUp.bind(this));
           canvas.addEventListener("mousemove", this.handleMouseMove.bind(this));
+          canvas.addEventListener("mouseup", this.handleMouseUp.bind(this));
         }
 
         resetShip() {
@@ -546,43 +550,45 @@ Vue.createApp({
 
         // Handle drag and drop for ships
         handleMouseDown(e) {
-          if (this.allSet) return;
-          const rect = canvas.getBoundingClientRect();
-          const x = e.clientX - rect.left;
-          const y = e.clientY - rect.top;
-          if (this.rotation) {
-            if (
-              x >= this.x &&
-              x < this.x + this.widthR &&
-              y >= this.y &&
-              y < this.y + this.heightR
-            ) {
-              this.x = x;
-              this.y = y - this.heightR / 2;
-              this.isDragging = true;
-              this.startX = x - this.x;
-              this.startY = y - this.y;
-              this.player.draw();
-              this.draw();
-              return;
+          this.mouseDownTimeout = setTimeout(() => {
+            if (this.allSet) return;
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            if (this.rotation) {
+              if (
+                x >= this.x &&
+                x < this.x + this.widthR &&
+                y >= this.y &&
+                y < this.y + this.heightR
+              ) {
+                this.x = x;
+                this.y = y - this.heightR / 2;
+                this.shipStatus = true;
+                this.startX = x - this.x;
+                this.startY = y - this.y;
+                this.player.draw();
+                this.draw();
+                return;
+              }
+            } else {
+              if (
+                x >= this.x &&
+                x < this.x + this.width &&
+                y >= this.y &&
+                y < this.y + this.height
+              ) {
+                this.y = y;
+                this.x = x - this.width / 2;
+                this.shipStatus = true;
+                this.startX = x - this.x;
+                this.startY = y - this.y;
+                this.player.draw();
+                this.draw();
+                return;
+              }
             }
-          } else {
-            if (
-              x >= this.x &&
-              x < this.x + this.width &&
-              y >= this.y &&
-              y < this.y + this.height
-            ) {
-              this.y = y;
-              this.x = x - this.width / 2;
-              this.isDragging = true;
-              this.startX = x - this.x;
-              this.startY = y - this.y;
-              this.player.draw();
-              this.draw();
-              return;
-            }
-          }
+          }, 200);
         }
 
         handleMouseMove(e) {
@@ -591,7 +597,7 @@ Vue.createApp({
           const x = e.clientX - rect.left;
           const y = e.clientY - rect.top;
 
-          if (this.isDragging) {
+          if (this.isDragging || this.shipStatus) {
             this.x = x - this.startX;
             this.y = y - this.startY;
             return;
@@ -599,9 +605,49 @@ Vue.createApp({
         }
 
         handleMouseUp(e) {
+          clearTimeout(this.mouseDownTimeout);
           if (this.allSet) return;
-          if (this.isDragging) {
+          if (!this.isDragging && !this.shipStatus) {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            if (this.rotation) {
+              if (
+                x >= this.x &&
+                x < this.x + this.widthR &&
+                y >= this.y &&
+                y < this.y + this.heightR
+              ) {
+                this.x = x;
+                this.y = y - this.heightR / 2;
+                this.isDragging = true;
+                this.startX = x - this.x;
+                this.startY = y - this.y;
+                this.player.draw();
+                this.draw();
+                return;
+              }
+            } else {
+              if (
+                x >= this.x &&
+                x < this.x + this.width &&
+                y >= this.y &&
+                y < this.y + this.height
+              ) {
+                this.y = y;
+                this.x = x - this.width / 2;
+                this.isDragging = true;
+                this.startX = x - this.x;
+                this.startY = y - this.y;
+                this.player.draw();
+                this.draw();
+                return;
+              }
+            }
+          }
+          if (this.isDragging || this.shipStatus) {
             this.isDragging = false;
+            this.shipStatus = false;
             const rect = canvas.getBoundingClientRect();
             const mouseX = e.clientX - rect.left;
             const mouseY = e.clientY - rect.top;
@@ -706,7 +752,7 @@ Vue.createApp({
       this.gameObj = game;
     },
     resetShips: function () {
-      for (var i = 0; i <= 6; i++) {
+      for (var i = 0; i <= 5; i++) {
         this.gameObj.player.ships[i].resetShip();
       }
     },
@@ -747,6 +793,17 @@ Vue.createApp({
         if (msg.EventType == "Kraken") {
           console.log(msg.Data);
           this.Kraken(msg.Data.cords);
+        }
+        if (msg.EventType == "Win") {
+          if (msg.Data.turn != this.player) {
+            this.Status = "You Win!";
+            this.page = 5;
+            this.win = true;
+          } else {
+            this.status = "You Lose!";
+            this.page = 5;
+            this.page = 5;
+          }
         }
         if (msg.EventType == "playerDisconnect") {
           console.log("Player disconnected");
@@ -892,7 +949,7 @@ Vue.createApp({
           this.socket.send(
             JSON.stringify({
               EventType: "usernameCode",
-              Data: { user: this.username, gameCode: this.gameCode },
+              Data: { user: this.username, code: this.gameCode },
             })
           );
         }

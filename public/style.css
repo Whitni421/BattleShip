@@ -18,7 +18,8 @@
 }
 #page1,
 #page2,
-#page4 {
+#page4,
+#page5 {
   background-image: url("images/LoginBackground.png");
   background-size: cover;
   background-position: bottom;
@@ -67,7 +68,7 @@
   font-family: "Pirata One", cursive;
   cursor: pointer;
 }
-#login h2 {
+#login h2, #page5 h2{
   font-size: 3rem;
   color: white;
   -webkit-text-stroke-width: 1px;
@@ -121,6 +122,29 @@
   color: black;
   font-family: "Pirata One", cursive;
   font-size: 2rem;
+}
+#loadscreen {
+  position: relative;
+  flex-direction: column;
+  background-image: url("images/chest_close.gif");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center center;
+  align-items: center;
+  justify-content: center;
+  max-height: 700px;
+  max-width: 500px;
+  width: 100%;
+  height: 100%;
+}
+
+#loadscreen h2 {
+  font-size: 3rem;
+  text-align: center;
+  color: white;
+  -webkit-text-stroke-width: 1px;
+  -webkit-text-stroke-color: black;
+  font-family: "Pirata One", cursive;
 }
 #loadscreen {
   position: relative;
@@ -252,7 +276,7 @@
   width: 500px;
   height: 500px;
 }
-#page4 #playAgain {
+.playAgain {
   border: rgb(254, 195, 4) 5px solid;
   border-radius: 4px;
   background-color: rgb(253, 149, 1);
@@ -403,3 +427,33 @@
   font-family: "Pirata One", cursive;
   text-align: center;
  }
+ #endscreen {
+    display: flex;
+    flex-direction: column;
+    background-image: url("images/winChest.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center center;
+    align-items: center;
+    justify-content: space-evenly;
+    gap: 30px;
+    max-height: 700px;
+    max-width: 500px;
+    width: 100%;
+    height: 100%;
+}
+#endscreenLose {
+  display: flex;
+  flex-direction: column;
+  background-image: url("images/loseskull.png");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center center;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 30px;
+  max-height: 700px;
+  max-width: 500px;
+  width: 100%;
+  height: 100%;
+}

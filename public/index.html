@@ -61,7 +61,7 @@
             @keyup.enter="load_screen()"
           />
           <div id="gameCodes">
-            <label for="codeGameBox">{{codeStatus}}Use Join Code</label>
+            <label for="codeGameBox">Use Join Code</label>
             <input type="checkbox" id="codeGameBox" v-model="codeGameToggle" />
             <input
             id="code_bar"
@@ -131,14 +131,29 @@
       <div id="page4" v-if="page=='4'">
         <div id="loseimage"></div>
         <h3>Other player has disconnected</h3>
-        <button id="playAgain" onClick="window.location.reload();">
+        <button class="playAgain" onClick="window.location.reload();">
           Back To Menu
         </button>
       </div>
       <!-- <div id="page4 page" v-if="page == 'page4'">
         <div id="player1-board">
       </div> -->
-      <div id="page5" v-if="page=='5'">Player ___ Won!</div>
+      <div id="page5" v-if="page=='5'">
+        <div id="endscreen" v-if="win">
+          <h2>{{status}}</h2>
+          <button class="playAgain" onClick="window.location.reload();">
+            Play Again
+          </button>
+        </div>
+        <div id="endscreenLose" v-else>
+          <h2>{{status}}</h2>
+          <button class="playAgain" onClick="window.location.reload();">
+            Play Again
+          </button>
+        </div>
+        
+        
+      </div>
     </div>
   </body>
   <script src="app.js"></script>
