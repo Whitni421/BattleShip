@@ -11,7 +11,7 @@ Vue.createApp({
     return {
       debug: true,
       canvas: 0,
-      page: 3,
+      page: 1,
       username: "",
       player_turn: 0,
       userRequired: false,
